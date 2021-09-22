@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from main.models.po_model import POModel
-from main.utils.xuat_nhap_ton_service import update_xnt_after_create_po
+from main.utils.xuat_nhap_ton_service import refresh_xnt
 
 
 class POSerializer(serializers.ModelSerializer):
@@ -11,6 +11,6 @@ class POSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        po = super().create(validated_data)
-        update_xnt_after_create_po(po)
-        return po
+        po_obj = super().create(validated_data)
+        refresh_xnt(po_obj.pn_13)
+        return po_obj

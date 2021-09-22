@@ -10,7 +10,6 @@
           id="input_date"
           v-model="form.input_date"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -52,6 +51,24 @@
         ></b-form-input>
       </b-form-group>
 
+      <b-form-group id="input-group-3" label="Giá Bán Sỉ:" label-for="gia_si">
+        <b-form-input
+          readonly
+          id="gia_si"
+          type="text"
+          v-model="form.gia_si"
+        ></b-form-input>
+      </b-form-group>
+
+      <b-form-group id="input-group-3" label="Giá Bán Lẻ:" label-for="gia_le">
+        <b-form-input
+          readonly
+          id="gia_le"
+          type="text"
+          v-model="form.gia_le"
+        ></b-form-input>
+      </b-form-group>
+
       <b-form-group
         id="input-group-8"
         label="English Description:"
@@ -61,7 +78,6 @@
           id="english_des"
           v-model="form.english_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -74,7 +90,6 @@
           id="import_des"
           v-model="form.import_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -87,7 +102,6 @@
           id="app_des"
           v-model="form.app_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -100,13 +114,12 @@
           id="customer"
           v-model="form.customer"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
       <br />
       <div style="float: right">
-        <b-button type="submit" variant="light">Tạo </b-button>
+        <b-button type="submit" variant="light">{{action}} </b-button>
         <b-button type="reset" variant="light">Reset </b-button>
         <b-button @click="onClose" variant="light">Đóng</b-button>
       </div>
@@ -118,12 +131,11 @@
 import axios from "axios";
 
 export default {
+  props: 
+    ['form_data', 'action'], 
   data() {
     return {
-      form: {
-        provider: "Bosch",
-        gia_goc: ""
-      },
+      form: this.$props['form_data'],
       show: true,
     };
   },
@@ -139,37 +151,50 @@ export default {
     },
     update_gia_goc_descriptions() {
       let params = { pn_13: this.form.pn_13 };
-    
-      axios
-        .get("http://localhost:8000/api/v1/nhap-kho", { params })
-        .then((response) => {
+          let base_url = "http://localhost:8000"
+      let url = base_url + "/api/v1/nhap-kho"
+      axios({
+        method: 'get',
+        url: url,
+        params: params
+      }).then((response) => {
           if (response.data.length > 0) {
             var nhap_kho = response.data[0];
-            console.log(nhap_kho);
             this.form.gia_goc = nhap_kho.gia_goc;
+            this.form.gia_si = nhap_kho.gia_si;
+            this.form.gia_le = nhap_kho.gia_le;
             this.form.english_des = nhap_kho.english_des;
             this.form.import_des = nhap_kho.import_des;
             this.form.app_des = nhap_kho.app_des;
           } else {
             this.form.gia_goc = "";
+            this.form.gia_si = "";
+            this.form.gia_le = "";
             this.form.english_des = "";
             this.form.import_des = "";
             this.form.app_des = "";
           }
           this.update_tien_goc();
-          // this.form.$emit('input', '?')
         });
     },
     onSubmit(event) {
-      event.preventDefault();
-      let thiz = this.$root;
-      axios
-        .post("http://localhost:8000/api/v1/xuat-kho", this.form)
-        .then((response) => {
-          console.log(response);
-          thiz.$emit("bv::hide::modal", "modal-po-form", "#btnShow");
-          thiz.$bvModal.msgBoxOk("Đã tạo xuất kho");
-          window.location.reload();
+      event.preventDefault()
+      let component = this
+      let base_url = "http://localhost:8000"
+      let url = base_url + "/api/v1/xuat-kho"
+      let method = 'post'
+      if (this.form.id) {
+        method = 'put'
+        url = `${url}/${this.form.id}`
+      }
+      axios({
+        method: method,
+        url: url,
+        data: this.form
+      }).then(() => {
+          component.$root.$emit("bv::hide::modal", "modal-xuat-kho-form", "#btnShow");
+        component.$root.$bvModal.msgBoxOk(`Đã ${this.$props['action']} Xuất Kho`)
+        component.$emit('refresh_table_data')
         })
         .catch(function (error) {
           alert(error);
@@ -177,9 +202,7 @@ export default {
     },
     onReset(event) {
       event.preventDefault();
-      // Reset our form values
       this.form = {};
-      // Trick to reset/clear native browser form validation state
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
@@ -187,8 +210,8 @@ export default {
       });
     },
     onClose() {
-      this.$root.$emit("bv::hide::modal", "modal-po-form", "#btnShow");
-      window.location.reload();
+      this.$root.$emit('bv::hide::modal', 'modal-xuat-kho-form', "#btnShow")
+      this.$emit('refresh_table_data')
     },
   },
 };

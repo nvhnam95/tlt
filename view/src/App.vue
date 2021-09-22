@@ -62,11 +62,9 @@ export default {
   },
   methods: {
     onToggleCollapse(collapsed) {
-      console.log("onToggleCollapse");
       this.collapsed = collapsed
     },
     onItemClick() {
-      console.log("onItemClick");
     },
     onResize() {
       if (window.innerWidth <= 767) {

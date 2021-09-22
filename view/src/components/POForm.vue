@@ -6,7 +6,6 @@
           id="po-no"
           v-model="form.po_no"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -32,9 +31,8 @@
       <b-form-group id="input-group-4" label="Bosch No:" label-for="bosch-no">
         <b-form-input
           id="bosch-no"
-          v-model="form.bosch_mo"
+          v-model="form.bosch_no"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -43,7 +41,6 @@
           id="z-excel-mo"
           v-model="form.z_exel_no"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -52,7 +49,6 @@
           id="stamping"
           v-model="form.stamping"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
       
@@ -62,7 +58,6 @@
           id="country"
           v-model="form.country"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -71,7 +66,6 @@
           id="english_des"
           v-model="form.english_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -80,7 +74,6 @@
           id="import_des"
           v-model="form.import_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -89,7 +82,6 @@
           id="app_des"
           v-model="form.app_des"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -166,7 +158,6 @@
           id="lead_time"
           v-model="form.lead_time"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -175,7 +166,6 @@
           id="customer"
           v-model="form.customer"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
 
@@ -184,12 +174,11 @@
           id="remarks"
           v-model="form.remarks"
           type="text"
-          required
         ></b-form-input>
       </b-form-group>
       <br>
       <div style="float: right">
-        <b-button type="submit" variant="light">Tạo </b-button>
+        <b-button type="submit" variant="light">{{action}} </b-button>
         <b-button type="reset" variant="light">Reset </b-button>
         <b-button @click="onClose" variant="light">Đóng</b-button>
       </div>
@@ -203,11 +192,13 @@ import axios from "axios";
 
 
 export default {
+  props: 
+    ['form_data', 'action'], 
+  mounted(){
+  },
   data() {
     return {
-      form: {
-        
-      },
+      form: this.$props['form_data'],
       show: true,
     };
   },
@@ -232,33 +223,38 @@ export default {
       }
     },
     onSubmit(event) {
+      let base_url = "http://localhost:8000"
+      let url = base_url + "/api/v1/purchasing-orders"
       event.preventDefault();
-      let thiz = this.$root
-      axios
-      .post("http://localhost:8000/api/v1/purchasing-orders", this.form)
-      .then((response) => {
-        console.log(response)
-        thiz.$emit('bv::hide::modal', 'modal-po-form', '#btnShow')
-        thiz.$bvModal.msgBoxOk('Đã tạo PO')
-        window.location.reload();
+      let component = this
+      let method = 'post'
+      if (this.form.id) {
+        method = 'put'
+        url = `${url}/${this.form.id}`
+      }
+      axios({
+        method: method,
+        url: url,
+        data: this.form
+      }).then(() => {
+        component.$root.$emit('bv::hide::modal', 'modal-po-form', '#btnShow')
+        component.$root.$bvModal.msgBoxOk(`Đã ${this.$props['action']} PO`)
+        component.$emit('refresh_table_data')
       }).catch(function (error) {
         alert(error);
       });
     },
     onReset(event) {
       event.preventDefault();
-      // Reset our form values
       this.form = {}
-      // Trick to reset/clear native browser form validation state
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
       });
     },
     onClose() {
-      console.log("hi");
       this.$root.$emit('bv::hide::modal', 'modal-po-form', "#btnShow")
-      window.location.reload();
+      this.$emit('refresh_table_data')
     },
   },
 };
