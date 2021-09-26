@@ -14,11 +14,12 @@
         label="Ngày Nhập:"
         label-for="input_date"
       >
-        <b-form-input
+        <b-form-datepicker
           id="input_date"
           v-model="form.input_date"
           type="text"
-        ></b-form-input>
+          :locale="locale"
+        ></b-form-datepicker>
       </b-form-group>
 
       <b-form-group
@@ -288,6 +289,7 @@ export default {
     return {
       form: this.$props["form_data"],
       show: true,
+      locale: "vi"
     };
   },
   methods: {
@@ -330,7 +332,7 @@ export default {
     },
     update_bosch_no_zexel_stamping_based_on_pn_10() {
       let params = { pn_10: this.form.pn_10 };
-      let base_url = "http://localhost:8000";
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/nhap-kho";
 
       axios.get(url, { params }).then((response) => {
@@ -345,7 +347,7 @@ export default {
     onSubmit(event) {
       event.preventDefault();
       let component = this;
-      let base_url = "http://localhost:8000";
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/nhap-kho";
       let method = "post";
       if (this.form.id) {

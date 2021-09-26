@@ -10,6 +10,7 @@
         variant="primary"
         >Thêm Mới</b-button
       >
+      &nbsp;
       <b-button
         @click="export_excel"
         variant="primary"
@@ -19,7 +20,6 @@
 
       <b-modal
         id="modal-po-form"
-        no-close-on-esc
         no-close-on-backdrop
         hide-header-close
         title="Thêm PO"
@@ -75,9 +75,6 @@ import $ from "jquery";
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
 
-import exportFromJSON from 'export-from-json'
-
-
 import POForm from "./POForm.vue";
 import axios from "axios";
 
@@ -127,7 +124,7 @@ export default {
     "po-form": POForm,
   },
   mounted() {
-    let base_url = "http://localhost:8000";
+    let base_url = process.env.VUE_APP_API_ENDPOINT;
     let url = base_url + "/api/v1/purchasing-orders";
     var component = this;
 
@@ -143,12 +140,7 @@ export default {
         },
       ],
       columns: columns,
-      scrollX: true,
-      autoWidth: true,
-      dom: 'Bfrtip',
-      buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
-      ]
+      scrollX: true
     });
 
 
@@ -170,18 +162,54 @@ export default {
   },
   methods: {
     export_excel(){
-      console.log(this.table.rows().data())
-      const data = [this.table.rows().data()]
-      const fileName = 'download'
-      const exportType =  exportFromJSON.types.csv
-      exportFromJSON({ data, fileName, exportType })
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
+      let url = base_url + "/api/v1/tools/to-xlsx";
+      let cell_raw_data = this.table.rows({filter:'applied'}).data()
+
+      let table_header_text = []
+      let table_header_name = []
+      let table_data = []
+
+      this.table.columns().every(function() {
+        table_header_text.push( this.header().textContent )
+      })
+
+      for (let c=0; c < columns.length-1; c++){
+        table_header_name.push(columns[c].data)
+      }
+
+      for (let d=0; d < cell_raw_data.length; d++){
+        let row = []
+        for (let c=0; c < table_header_name.length; c++){
+          row.push(cell_raw_data[d][table_header_name[c]])
+        }
+        table_data.push(row)
+      }
+      console.log(table_data)
+      console.log(table_header_text)
+      table_data = [].concat([table_header_text], table_data)
+
+      // Download file
+      axios({
+        url: url,
+        method: 'post',
+        data: table_data,
+        responseType: 'blob', // important
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'po.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      });
 
     },
     refresh_table_data() {
       this.table.ajax.reload();
     },
     delete_po(id) {
-      let base_url = "http://localhost:8000";
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/purchasing-orders" + "/" + id;
       axios.delete(url).then(() => {
         this.$root.$bvModal.msgBoxOk(`Đã Xóa`);

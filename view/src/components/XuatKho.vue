@@ -14,7 +14,6 @@
 
       <b-modal
         id="modal-xuat-kho-form"
-        no-close-on-esc
         no-close-on-backdrop
         hide-header-close
         title="Xuất Kho"
@@ -102,7 +101,7 @@ export default {
     XuatKhoForm,
   },
   mounted() {
-    let base_url = "http://localhost:8000";
+    let base_url = process.env.VUE_APP_API_ENDPOINT;
     let url = base_url + "/api/v1/xuat-kho";
     var component = this;
     this.table = $("#poes_table").DataTable({
@@ -142,7 +141,7 @@ export default {
       this.table.ajax.reload();
     },
     delete_po(id) {
-      let base_url = "http://localhost:8000";
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/xuat-kho" + "/" + id;
       axios.delete(url).then(() => {
         this.$root.$bvModal.msgBoxOk(`Đã Xóa`);

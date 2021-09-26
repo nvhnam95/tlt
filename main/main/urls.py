@@ -16,7 +16,7 @@ router.register(r'api/v1/xuat-nhap-ton', XuatNhapTonView)
 
 urlpatterns = [
     path('give-me-some-test-data', generate_test_data),
-    path('to-excel', json_to_excel),
+    path('api/v1/tools/to-xlsx', json_to_excel),
 ]
 
 urlpatterns += router.urls

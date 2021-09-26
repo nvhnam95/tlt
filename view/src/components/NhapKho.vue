@@ -14,7 +14,6 @@
 
       <b-modal
         id="modal-nhap-kho-form"
-        no-close-on-esc
         no-close-on-backdrop
         hide-header-close
         title="Nhập Kho"
@@ -77,7 +76,7 @@ import axios from "axios";
 import NhapKhoForm from "./NhapKhoForm.vue";
 
 let columns = [
-  { data: "po_no" },
+  { data: "po_no"},
   { data: "input_date" },
   { data: "license_no" },
   { data: "provider" },
@@ -129,7 +128,7 @@ export default {
     NhapKhoForm,
   },
   mounted() {
-    let base_url = "http://localhost:8000";
+    let base_url = process.env.VUE_APP_API_ENDPOINT;
     let url = base_url + "/api/v1/nhap-kho";
     var component = this;
     this.table = $("#poes_table").DataTable({
@@ -148,13 +147,13 @@ export default {
       autoWidth: true,
     });
 
+    // Handle button: Edit, Remove
     $("#poes_table tbody").on("click", "button", function () {
       var data = component.table.row($(this).parents("tr")).data();
       if ($(this).attr("action") == "delete") {
         component.delete_po(data.id);
         return;
       }
-
       component.$bvModal.show("modal-nhap-kho-form");
       component.form_data = data;
       if ("id" in data) {
@@ -169,7 +168,7 @@ export default {
       this.table.ajax.reload();
     },
     delete_po(id) {
-      let base_url = "http://localhost:8000";
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/nhap-kho" + "/" + id;
       axios.delete(url).then(() => {
         this.$root.$bvModal.msgBoxOk(`Đã Xóa`);

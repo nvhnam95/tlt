@@ -1,35 +1,36 @@
-from io import StringIO
-from zipfile import ZipFile
-import tempfile
+import io
 
-from django.core.files.temp import NamedTemporaryFile
+import xlsxwriter
 from django.http import HttpResponse
-from openpyxl import Workbook
-from openpyxl.writer.excel import ExcelWriter
-import pandas
-from io import BytesIO
-from openpyxl.writer.excel import save_virtual_workbook
-from openpyxl import Workbook
-
-from pyexcel_xlsx import save_data
-
-keys = []
-wb = Workbook()
-ws = wb.active
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
+
+@api_view(['post'])
 def json_to_excel(request):
-    json_data = [{"name": "Nam"}]
-    for i in range(len(json_data)):
-        sub_obj = json_data[i]
-        if i == 0:
-            keys = list(sub_obj.keys())
-            for k in range(len(keys)):
-                # row or column index start from 1
-                ws.cell(row=(i + 1), column=(k + 1), value=keys[k])
-        for j in range(len(keys)):
-            ws.cell(row=(i + 2), column=(j + 1), value=sub_obj[keys[j]])
-    virtual_workbook = BytesIO()
-    wb.save(virtual_workbook)
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+    data = request.data
 
-    return HttpResponse(virtual_workbook)
+    # Write some test data.
+    for row_num, columns in enumerate(data):
+        for col_num, cell_data in enumerate(columns):
+            worksheet.write(row_num, col_num, cell_data)
+
+    # Close the workbook before sending the data.
+    workbook.close()
+
+    # Rewind the buffer.
+    output.seek(0)
+
+    # Set up the Http response.
+    # filename = 'django_simple.xlsx'
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    # response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    return response

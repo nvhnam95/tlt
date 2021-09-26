@@ -223,7 +223,7 @@ export default {
       }
     },
     onSubmit(event) {
-      let base_url = "http://localhost:8000"
+      let base_url = process.env.VUE_APP_API_ENDPOINT
       let url = base_url + "/api/v1/purchasing-orders"
       event.preventDefault();
       let component = this

@@ -12,7 +12,7 @@
     >
       <thead>
         <tr>
-          <th>No.</th>
+          <!-- <th>No.</th> -->
           <th>Ứng Dụng</th>
           <th>Pn 13</th>
           <th>Bosch No</th>
@@ -32,22 +32,39 @@
           <th>Giá Bán Lẻ</th>
         </tr>
       </thead>
+              <tfoot>
+            <tr>
+          <!-- <th>No.</th> -->
+          <th>Ứng Dụng</th>
+          <th>Pn 13</th>
+          <th>Bosch No</th>
+          <th>Zexel No</th>
+          <th>Stamping</th>
+          <th>English Name</th>
+          <th>Import Name<br />(Tên nhập khẩu)</th>
+          <th>App Name <br />(Tên Ứng Dụng)</th>
+          <th>Giá Nhập DAP <br />(USD)</th>
+          <th>Số Lượng Nhập</th>
+          <th>Số Lượng Xuất</th>
+          <th>Tồn Cuối</th>
+          <th>Total/PO</th>
+          <th>Back Order</th>
+          <th>Tiền BackOrder</th>
+          <th>Giá Bán Sỉ</th>
+          <th>Giá Bán Lẻ</th>
+            </tr>
+        </tfoot>
     </table>
   </div>
 </template>
  
 <script>
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "jquery/dist/jquery.min.js";
-
-// import "datatables.net-dt/js/dataTables.dataTables";
-// import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from "jquery";
 
 import axios from "axios";
 
 let columns = [
-  { data: "id" },
+  // { data: "id" },
   { data: "ung_dung" },
   { data: "pn_13" },
   { data: "bosch_no" },
@@ -69,7 +86,15 @@ let columns = [
 
 export default {
   mounted() {
-    axios.get("http://localhost:8000/api/v1/xuat-nhap-ton").then((response) => {
+    let base_url = process.env.VUE_APP_API_ENDPOINT;
+    let url = base_url + "/api/v1/xuat-nhap-ton"
+        
+    // $('#poes_table thead tr')
+    // .clone(true)
+    // .addClass('filters')
+    // .appendTo('#poes_table thead');
+
+    axios.get(url).then((response) => {
       $("#poes_table").DataTable({
         data: response.data,
         columnDefs: [
@@ -82,8 +107,28 @@ export default {
         scrollX: true,
         autoWidth: true,
         responsive: true,
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every( function () {
+                var that = this;
+ 
+                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+        }
       });
     });
+
+        $('#poes_table tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
+    } );
+
   },
 };
 </script>

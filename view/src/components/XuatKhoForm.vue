@@ -6,11 +6,12 @@
         label="Ngày Nhập:"
         label-for="input_date"
       >
-        <b-form-input
+        <b-form-datepicker
           id="input_date"
           v-model="form.input_date"
           type="text"
-        ></b-form-input>
+          :locale="locale"
+        ></b-form-datepicker>
       </b-form-group>
 
       <b-form-group id="input-group-2" label="Pn 13:" label-for="pn-13">
@@ -137,6 +138,7 @@ export default {
     return {
       form: this.$props['form_data'],
       show: true,
+      locale: "vi"
     };
   },
   methods: {
@@ -151,7 +153,7 @@ export default {
     },
     update_gia_goc_descriptions() {
       let params = { pn_13: this.form.pn_13 };
-          let base_url = "http://localhost:8000"
+          let base_url = process.env.VUE_APP_API_ENDPOINT
       let url = base_url + "/api/v1/nhap-kho"
       axios({
         method: 'get',
@@ -180,7 +182,7 @@ export default {
     onSubmit(event) {
       event.preventDefault()
       let component = this
-      let base_url = "http://localhost:8000"
+      let base_url = process.env.VUE_APP_API_ENDPOINT
       let url = base_url + "/api/v1/xuat-kho"
       let method = 'post'
       if (this.form.id) {

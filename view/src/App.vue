@@ -122,6 +122,6 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 30000px !important;
 }
 </style>
