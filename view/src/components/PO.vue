@@ -77,47 +77,49 @@ import "datatables.net-dt/css/jquery.dataTables.min.css";
 
 import POForm from "./POForm.vue";
 import axios from "axios";
+import tool_mixin from "./tool_mixins.js" ;
 
-let columns = [
-  { data: "po_no", width: 150 },
-  { data: "pn_13" },
-  { data: "pn_10" },
-  { data: "bosch_no" },
-  { data: "z_exel_no" },
-  { data: "stamping" },
-  { data: "country" },
-  { data: "english_des" },
-  { data: "import_des" },
-  { data: "app_des" },
-  { data: "tax" },
-  { data: "quantity" },
-  { data: "dap_price", render: $.fn.dataTable.render.number(",", ".", 2) },
-  {
-    data: "extension_price",
-    render: $.fn.dataTable.render.number(",", ".", 2),
-  },
-  { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "lead_time" },
-  { data: "customer" },
-  { data: "remarks" },
-  {
-    data: null,
-    width: 100,
-    defaultContent:
-      '<button type="button" action="edit" v-b-modal.modal-po-form class="btn btn-warning flat">Sửa</button>\
-      <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
-  },
-];
 
 export default {
+  mixins: [tool_mixin],
   data: function () {
     return {
       table: null,
+      export_file_name: 'po',
       form_data: {},
       action: "Tạo",
-      sheets: [{ name: "SheetOne" }],
+      columns: [
+          { data: "po_no", width: 150 },
+          { data: "pn_13" },
+          { data: "pn_10" },
+          { data: "bosch_no" },
+          { data: "z_exel_no" },
+          { data: "stamping" },
+          { data: "country" },
+          { data: "english_des" },
+          { data: "import_des" },
+          { data: "app_des" },
+          { data: "tax" },
+          { data: "quantity" },
+          { data: "dap_price", render: $.fn.dataTable.render.number(",", ".", 2) },
+          {
+            data: "extension_price",
+            render: $.fn.dataTable.render.number(",", ".", 2),
+          },
+          { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
+          { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
+          { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
+          { data: "lead_time" },
+          { data: "customer" },
+          { data: "remarks" },
+          {
+            data: null,
+            width: 100,
+            defaultContent:
+              '<button type="button" action="edit" v-b-modal.modal-po-form class="btn btn-warning flat">Sửa</button>\
+              <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
+          },
+        ]
     };
   },
   components: {
@@ -139,10 +141,9 @@ export default {
           targets: "_all",
         },
       ],
-      columns: columns,
+      columns: this.columns,
       scrollX: true
     });
-
 
     $("#poes_table tbody").on("click", "button", function () {
       var data = component.table.row($(this).parents("tr")).data();
@@ -161,50 +162,6 @@ export default {
     });
   },
   methods: {
-    export_excel(){
-      let base_url = process.env.VUE_APP_API_ENDPOINT;
-      let url = base_url + "/api/v1/tools/to-xlsx";
-      let cell_raw_data = this.table.rows({filter:'applied'}).data()
-
-      let table_header_text = []
-      let table_header_name = []
-      let table_data = []
-
-      this.table.columns().every(function() {
-        table_header_text.push( this.header().textContent )
-      })
-
-      for (let c=0; c < columns.length-1; c++){
-        table_header_name.push(columns[c].data)
-      }
-
-      for (let d=0; d < cell_raw_data.length; d++){
-        let row = []
-        for (let c=0; c < table_header_name.length; c++){
-          row.push(cell_raw_data[d][table_header_name[c]])
-        }
-        table_data.push(row)
-      }
-      console.log(table_data)
-      console.log(table_header_text)
-      table_data = [].concat([table_header_text], table_data)
-
-      // Download file
-      axios({
-        url: url,
-        method: 'post',
-        data: table_data,
-        responseType: 'blob', // important
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'po.xlsx');
-        document.body.appendChild(link);
-        link.click();
-      });
-
-    },
     refresh_table_data() {
       this.table.ajax.reload();
     },

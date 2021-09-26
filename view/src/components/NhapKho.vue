@@ -10,6 +10,12 @@
         variant="primary"
         >Thêm Mới</b-button
       >
+      &nbsp;
+      <b-button
+        @click="export_excel"
+        variant="primary"
+        >Export Excel</b-button
+      >
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
 
       <b-modal
@@ -74,47 +80,14 @@ import $ from "jquery";
 
 import axios from "axios";
 import NhapKhoForm from "./NhapKhoForm.vue";
-
-let columns = [
-  { data: "po_no"},
-  { data: "input_date" },
-  { data: "license_no" },
-  { data: "provider" },
-  { data: "pn_13" },
-  { data: "pn_10" },
-  { data: "bosch_no" },
-  { data: "z_exel_no" },
-  { data: "stamping" },
-  { data: "english_des" },
-  { data: "import_des" },
-  { data: "app_des" },
-  { data: "quantity" },
-  { data: "dap_price", render: $.fn.dataTable.render.number(",", ".", 2) },
-  {
-    data: "extension_price",
-    render: $.fn.dataTable.render.number(",", ".", 2),
-  },
-  { data: "tax" },
-  { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "gia_goc", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "tong_gia_goc", render: $.fn.dataTable.render.number(",", ".", 2) },
-  { data: "ratio" },
-  { data: "vat_percentage" },
-  {
-    data: null,
-    width: 100,
-    defaultContent:
-      '<button type="button" action="edit" class="btn btn-warning flat">Sửa</button>\
-    <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
-  },
-];
+import tool_mixin from "./tool_mixins.js" ;
 
 export default {
+  mixins: [tool_mixin],
   data: function () {
     return {
       table: null,
+      export_file_name: 'nhap_kho',
       form_data: {
         provider: "Bosch",
         bosch_no: "",
@@ -122,6 +95,41 @@ export default {
         english_des: "",
       },
       action: "Tạo",
+      columns: [
+        { data: "po_no"},
+        { data: "input_date" },
+        { data: "license_no" },
+        { data: "provider" },
+        { data: "pn_13" },
+        { data: "pn_10" },
+        { data: "bosch_no" },
+        { data: "z_exel_no" },
+        { data: "stamping" },
+        { data: "english_des" },
+        { data: "import_des" },
+        { data: "app_des" },
+        { data: "quantity" },
+        { data: "dap_price", render: $.fn.dataTable.render.number(",", ".", 2) },
+        {
+          data: "extension_price",
+          render: $.fn.dataTable.render.number(",", ".", 2),
+        },
+        { data: "tax" },
+        { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "gia_goc", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "tong_gia_goc", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "ratio" },
+        { data: "vat_percentage" },
+        {
+          data: null,
+          width: 100,
+          defaultContent:
+            '<button type="button" action="edit" class="btn btn-warning flat">Sửa</button>\
+          <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
+        },
+      ]
     };
   },
   components: {
@@ -142,7 +150,7 @@ export default {
           targets: "_all",
         },
       ],
-      columns: columns,
+      columns: this.columns,
       scrollX: true,
       autoWidth: true,
     });
