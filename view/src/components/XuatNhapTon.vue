@@ -70,6 +70,7 @@ import $ from "jquery";
 
 import axios from "axios";
 import tool_mixin from "./tool_mixins.js" ;
+import moment from 'moment';
 
 
 export default {
@@ -77,7 +78,7 @@ export default {
   data: function (){
     return {
       table: null,
-      export_file_name: 'xuat_nhap_ton',
+      export_file_name: 'xuat_nhap_ton_' + moment().format('DD_MM_YYYY'),
       columns: [
         { data: "ung_dung" },
         { data: "pn_13" },

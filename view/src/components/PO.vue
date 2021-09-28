@@ -78,6 +78,7 @@ import "datatables.net-dt/css/jquery.dataTables.min.css";
 import POForm from "./POForm.vue";
 import axios from "axios";
 import tool_mixin from "./tool_mixins.js" ;
+import moment from 'moment';
 
 
 export default {
@@ -85,7 +86,7 @@ export default {
   data: function () {
     return {
       table: null,
-      export_file_name: 'po',
+      export_file_name: 'PO_'+ moment().format('DD_MM_YYYY'),
       form_data: {},
       action: "Tạo",
       columns: [

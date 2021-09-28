@@ -69,13 +69,15 @@ import $ from "jquery";
 import axios from "axios";
 import XuatKhoForm from "./XuatKhoForm.vue";
 import tool_mixin from "./tool_mixins.js" ;
+import moment from 'moment';
+
 
 export default {
   mixins: [tool_mixin],
   data: function () {
     return {
       table: null,
-      export_file_name: 'xuat_kho',
+      export_file_name: 'xuat_kho_' + moment().format('DD_MM_YYYY'),
       form_data: {
         provider: "Bosch",
         gia_goc: "",

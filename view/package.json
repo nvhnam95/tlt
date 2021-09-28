@@ -24,6 +24,7 @@
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
     "jszip": "^3.7.1",
+    "moment": "^2.29.1",
     "pdfmake": "^0.2.2",
     "tableexport": "^5.2.0",
     "vue": "^2.6.14",
