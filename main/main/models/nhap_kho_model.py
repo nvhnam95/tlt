@@ -25,3 +25,4 @@ class NhapKhoModel(models.Model):
     tong_gia_goc = models.FloatField(default=0, blank=True)
     ratio = models.FloatField(default=0, blank=True)
     vat_percentage = models.FloatField(default=0, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)

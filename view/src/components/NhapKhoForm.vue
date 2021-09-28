@@ -287,7 +287,12 @@ export default {
   props: ["form_data", "action"],
   data() {
     return {
-      form: this.$props["form_data"],
+      form: Object.keys(this.$props["form_data"]).length !== 0 ? this.$props["form_data"] : {
+        provider: "Bosch",
+        bosch_no: "",
+        z_exel_no: "",
+        english_des: "",
+      },
       show: true,
       locale: "vi"
     };
@@ -331,9 +336,9 @@ export default {
       }
     },
     update_bosch_no_zexel_stamping_based_on_pn_10() {
-      let params = { pn_10: this.form.pn_10 };
+      let params = { pn_13: this.form.pn_13 };
       let base_url = process.env.VUE_APP_API_ENDPOINT;
-      let url = base_url + "/api/v1/nhap-kho";
+      let url = base_url + "/api/v1/purchasing-orders";
 
       axios.get(url, { params }).then((response) => {
         if (response.data.length > 0) {
@@ -341,6 +346,11 @@ export default {
           this.form.bosch_no = po.bosch_no;
           this.form.z_exel_no = po.z_exel_no;
           this.form.stamping = po.stamping;
+        }
+        else {
+          this.form.bosch_no = "";
+          this.form.z_exel_no = "";
+          this.form.stamping = "";
         }
       });
     },

@@ -59,6 +59,7 @@ export default {
   mounted() {
     this.onResize();
     window.addEventListener("resize", this.onResize);
+    document.title = "Quản lý";
   },
   methods: {
     onToggleCollapse(collapsed) {

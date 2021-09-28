@@ -81,6 +81,7 @@ export default {
         gia_goc: "",
         gia_si: "",
         gia_le: "",
+        tien_goc: "",
       },
       action: "Tạo",
       columns: [

@@ -11,7 +11,7 @@ class POView(ModelViewSet):
     serializer_class = POSerializer
     queryset = POModel.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['pn_10']
+    filterset_fields = ['pn_13']
 
     def destroy(self, request, *args, **kwargs):
         po_obj = self.get_object()

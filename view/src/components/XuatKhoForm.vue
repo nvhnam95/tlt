@@ -136,7 +136,13 @@ export default {
     ['form_data', 'action'], 
   data() {
     return {
-      form: this.$props['form_data'],
+      form: Object.keys(this.$props["form_data"]).length !== 0 ? this.$props["form_data"] : {
+        provider: "Bosch",
+        gia_goc: "",
+        gia_si: "",
+        gia_le: "",
+        tien_goc: "",
+      },
       show: true,
       locale: "vi"
     };
@@ -153,7 +159,7 @@ export default {
     },
     update_gia_goc_descriptions() {
       let params = { pn_13: this.form.pn_13 };
-          let base_url = process.env.VUE_APP_API_ENDPOINT
+      let base_url = process.env.VUE_APP_API_ENDPOINT
       let url = base_url + "/api/v1/nhap-kho"
       axios({
         method: 'get',
@@ -162,22 +168,30 @@ export default {
       }).then((response) => {
           if (response.data.length > 0) {
             var nhap_kho = response.data[0];
-            this.form.gia_goc = nhap_kho.gia_goc;
             this.form.gia_si = nhap_kho.gia_si;
             this.form.gia_le = nhap_kho.gia_le;
             this.form.english_des = nhap_kho.english_des;
             this.form.import_des = nhap_kho.import_des;
             this.form.app_des = nhap_kho.app_des;
           } else {
-            this.form.gia_goc = "";
             this.form.gia_si = "";
             this.form.gia_le = "";
             this.form.english_des = "";
             this.form.import_des = "";
             this.form.app_des = "";
           }
+        });
+
+      url = base_url + "/api/v1/xuat-kho/calculate-gia-goc"
+      axios({
+        method: 'get',
+        url: url,
+        params: params
+      }).then((response) => {
+          this.form.gia_goc = response.data;
           this.update_tien_goc();
         });
+      
     },
     onSubmit(event) {
       event.preventDefault()
