@@ -1,5 +1,6 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet
 
 from main.models.nhap_kho_model import NhapKhoModel
@@ -23,7 +24,7 @@ class XuatKhoView(ModelViewSet):
     def calculate_gia_goc(self, request):
         pn_13 = request.query_params.get('pn_13')
         if not pn_13:
-            return "pn_13 is required", 400
+            return Response("pn_13 is required", status=HTTP_400_BAD_REQUEST)
 
         recent_xuat_kho = XuatKhoModel.objects.filter(pn_13=pn_13).last()
 
