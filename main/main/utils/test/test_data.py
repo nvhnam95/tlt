@@ -10,6 +10,7 @@ from main.models.xuat_kho_model import XuatKhoModel
 from main.serializers.nhap_kho_ser import NhapKhoSerializer
 from main.serializers.po_ser import POSerializer
 from main.serializers.xuat_kho_ser import XuatKhoSerializer
+from main.utils.pricing_service import calculate_gia_goc_xuat_kho
 
 
 def generate_test_data(request):
@@ -44,15 +45,18 @@ def generate_test_data(request):
                 "customer": sheet_obj.cell(row=row, column=19).value or '',
                 "remarks": sheet_obj.cell(row=row, column=20).value or '',
             }
+            if not validated_data["gia_le"]:
+                validated_data["gia_le"] = validated_data["gia_si"] * 1.1
             POSerializer().create(validated_data)
 
     if not NhapKhoModel.objects.all():
         # Nhap kho
         sheet_obj = wb.worksheets[1]
         for row in range(4, 136):
-            input_date = sheet_obj.cell(row=row, column=1).value or ''
-            if type(input_date) == datetime:
-                input_date = input_date.strftime("%d-%m-%y")
+            input_date = None
+            cell_value = sheet_obj.cell(row=row, column=1).value
+            if type(cell_value) == datetime:
+                input_date = cell_value.strftime("%Y-%m-%d")
             validated_data = {
                 "input_date": input_date,
                 "license_no": sheet_obj.cell(row=row, column=2).value or '',
@@ -75,25 +79,32 @@ def generate_test_data(request):
             }
             validated_data["gia_goc"] = round(validated_data["dap_price"] * validated_data["ratio"] * validated_data["tax"], 3)
             validated_data["tong_gia_goc"] = round(validated_data["gia_goc"] * validated_data["quantity"], 3)
+            if not validated_data["gia_le"]:
+                validated_data["gia_le"] = validated_data["gia_si"] * 1.1
 
+            recent_po = POModel.objects.filter(pn_13=validated_data["pn_13"]).last()
+            if recent_po:
+                validated_data["english_des"] = recent_po.english_des
+                validated_data["app_des"] = recent_po.app_des
+                validated_data["import_des"] = recent_po.import_des
             NhapKhoSerializer().create(validated_data)
 
     if not XuatKhoModel.objects.all():
         # Xuat kho
         sheet_obj = wb.worksheets[2]
         for row in range(8, 96):
-            input_date = sheet_obj.cell(row=row, column=2).value or ''
+            input_date = sheet_obj.cell(row=row, column=2).value
             if input_date:
-                input_date = input_date.strftime("%d-%m-%y")
+                input_date = input_date.strftime("%Y-%m-%d")
+            pn_13 = sheet_obj.cell(row=row, column=3).value or ''
             validated_data = {
                 "input_date": input_date,
-                "pn_13": sheet_obj.cell(row=row, column=3).value or '',
+                "pn_13": pn_13,
                 "quantity": sheet_obj.cell(row=row, column=6).value or '',
             }
-            print(validated_data)
             last_nhap_kho = NhapKhoModel.objects.filter(pn_13=validated_data["pn_13"]).last()
             if last_nhap_kho:
-                validated_data["gia_goc"] = last_nhap_kho.gia_goc
+                validated_data["gia_goc"] = calculate_gia_goc_xuat_kho(pn_13=pn_13)
                 validated_data["gia_si"] = last_nhap_kho.gia_si
                 validated_data["gia_le"] = last_nhap_kho.gia_le
                 validated_data["english_des"] = last_nhap_kho.english_des

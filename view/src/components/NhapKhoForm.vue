@@ -299,10 +299,8 @@ export default {
   },
   methods: {
     pn_13_listener() {
-      if (this.form.pn_13.length >= 13) {
-        this.form.pn_10 = this.form.pn_13.slice(0, 10);
-        this.update_bosch_no_zexel_stamping_based_on_pn_10();
-      }
+      this.form.pn_10 = this.form.pn_13.slice(0, 10);
+      this.update_bosch_no_zexel_stamping_based_on_pn_10();
     },
     update_extension_price() {
       if (this.form.quantity && this.form.dap_price) {
@@ -346,11 +344,17 @@ export default {
           this.form.bosch_no = po.bosch_no;
           this.form.z_exel_no = po.z_exel_no;
           this.form.stamping = po.stamping;
+          this.form.english_des = po.english_des;
+          this.form.app_des = po.app_des;
+          this.form.import_des = po.import_des;
         }
         else {
           this.form.bosch_no = "";
           this.form.z_exel_no = "";
           this.form.stamping = "";
+          this.form.english_des = "";
+          this.form.app_des = "";
+          this.form.import_des = "";
         }
       });
     },

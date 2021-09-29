@@ -22,6 +22,7 @@ def refresh_xnt(pn_13):
         xnt.stamping = nhap_kho_obj.stamping
         xnt.english_des = nhap_kho_obj.english_des
         xnt.app_des = nhap_kho_obj.app_des
+        xnt.import_des = nhap_kho_obj.import_des
         xnt.dap_price = nhap_kho_obj.dap_price
         xnt.gia_si = nhap_kho_obj.gia_si
         xnt.gia_le = nhap_kho_obj.gia_le

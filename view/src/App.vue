@@ -34,22 +34,22 @@ export default {
         {
           href: "/po",
           title: "PO",
-          icon: "fa fa-code",
+          icon: "fa fa-shopping-cart",
         },
         {
           href: "/nhap-kho",
           title: "Nhập Kho",
-          icon: "fa fa-cogs",
+          icon: "fa fa-download",
         },
         {
           href: "/xuat-kho",
           title: "Xuất Kho",
-          icon: "fa fa-bell",
+          icon: "fa fa-upload",
         },
         {
           href: "/xuat-nhap-ton",
           title: "Xuất-Nhập-Tồn",
-          icon: "fa fa-palette",
+          icon: "fa fa-table",
         },
       ],
       isOnMobile: false,

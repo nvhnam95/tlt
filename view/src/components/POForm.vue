@@ -204,10 +204,8 @@ export default {
   },
   methods: {
     pn_13_listener(){
-      if (this.form.pn_13.length >= 13){
-        this.form.pn_10 = this.form.pn_13.slice(0, 10)
-        this.form.country = this.form.pn_13.slice(10, 13)
-      }
+      this.form.pn_10 = this.form.pn_13.slice(0, 10)
+      this.form.country = this.form.pn_13.slice(10, 13)
     },
     update_extension_price(){
       if (this.form.quantity && this.form.dap_price){

@@ -10,7 +10,7 @@
         variant="primary"
         >Export Excel</b-button
       >
-
+      <div id="start-date"></div>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
     </div>
     <table
@@ -71,6 +71,7 @@ import $ from "jquery";
 import axios from "axios";
 import tool_mixin from "./tool_mixins.js" ;
 import moment from 'moment';
+import "jquery-ui"
 
 
 export default {
@@ -97,7 +98,14 @@ export default {
         { data: "bor_price", render: $.fn.dataTable.render.number(",", ".", 2) },
         { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
         { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
-      ]
+      ],
+        options: [
+          { value: null, text: 'toàn thời gian' },
+          { value: 'a', text: 'tuần trước' },
+          { value: 'b', text: 'tháng trước' },
+          { value: { C: '3PO' }, text: 'Lựa chọn' },
+          { value: 'd', text: 'This one is disabled', disabled: true }
+        ]
     }
   },
   mounted() {
@@ -130,15 +138,20 @@ export default {
                     }
                 } );
             } );
+            // Add time range filter
+        },
+        language : {
+          "lengthMenu": "Hiển thị _MENU_ dòng"
         }
       });
     });
 
-        $('#poes_table tfoot th').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
-    } );
+    $('#poes_table tfoot th').each( function () {
+      var title = $(this).text();
+      $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
+    });
 
+    
   },
 };
 </script>

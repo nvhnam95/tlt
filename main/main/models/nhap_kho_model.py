@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.db import models
 
 
 class NhapKhoModel(models.Model):
     po_no = models.TextField(default='', blank=True)
-    input_date = models.TextField(default='', blank=True)
+    input_date = models.DateField(null=True, blank=True)
     license_no = models.TextField(default='', blank=True)
     provider = models.TextField(default='', blank=True)
     pn_13 = models.TextField(default='', blank=True)
