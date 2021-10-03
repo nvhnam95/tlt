@@ -12,6 +12,8 @@
       >
       <div id="start-date"></div>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
+      <p>Chọn ngày (ngày cập nhật):</p>
+      <input id="date-filter" /><br /><br />
     </div>
     <table
       class="table table-hover table-bordered cell-border stripe"
@@ -68,10 +70,10 @@
 <script>
 import $ from "jquery";
 
-import axios from "axios";
 import tool_mixin from "./tool_mixins.js" ;
-import moment from 'moment';
-import "jquery-ui"
+import moment from "moment";
+import "daterangepicker/daterangepicker";
+import "daterangepicker/daterangepicker.css";
 
 
 export default {
@@ -105,54 +107,134 @@ export default {
           { value: 'b', text: 'tháng trước' },
           { value: { C: '3PO' }, text: 'Lựa chọn' },
           { value: 'd', text: 'This one is disabled', disabled: true }
-        ]
+        ],
+        table_data_url: process.env.VUE_APP_API_ENDPOINT + "/api/v1/xuat-nhap-ton"
     }
   },
   mounted() {
-    let base_url = process.env.VUE_APP_API_ENDPOINT;
-    let url = base_url + "/api/v1/xuat-nhap-ton"
-  
-    axios.get(url).then((response) => {
-      this.table = $("#poes_table").DataTable({
-        data: response.data,
-        columnDefs: [
-          {
-            defaultContent: "-",
-            targets: "_all",
-          },
-        ],
-        columns: this.columns,
-        scrollX: true,
-        autoWidth: true,
-        responsive: true,
-        initComplete: function () {
-            // Apply the search
-            this.api().columns().every( function () {
-                var that = this;
- 
-                $( 'input', this.footer() ).on( 'keyup change clear', function () {
-                    if ( that.search() !== this.value ) {
-                        that
-                            .search( this.value )
-                            .draw();
-                    }
-                } );
-            } );
-            // Add time range filter
+    let url = this.table_data_url
+    this.generate_search_boxes()
+    this.table = $("#poes_table").DataTable({
+      ajax: {
+        url: url,
+        dataSrc: "",
+      },
+      columnDefs: [
+        {
+          defaultContent: "-",
+          targets: "_all",
         },
-        language : {
-          "lengthMenu": "Hiển thị _MENU_ dòng"
-        }
-      });
+      ],
+      columns: this.columns,
+      scrollX: true,
+      autoWidth: true,
+      responsive: true,
+      initComplete: function () {
+          // Apply the search
+          this.api().columns().every( function () {
+              var that = this;
+              $('input', this.footer()).on('keyup change clear', function () {
+                if (that.search() !== this.value) {
+                  if (this.value === ''){
+                      that.search("").draw();
+                  }
+                  else {
+                    that.search("^" + this.value + "$" , true, false).draw();
+                  }
+                }
+              });
+          });
+          // Add time range filter
+      },
+      language : {
+        "lengthMenu": "Hiển thị _MENU_ dòng"
+      }
     });
-
-    $('#poes_table tfoot th').each( function () {
-      var title = $(this).text();
-      $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
-    });
-
-    
   },
+  methods: {
+    generate_search_boxes() {
+      $("#poes_table tfoot th").each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" placeholder="Tìm ' + title + '" />');
+      });
+
+      // Date range
+      var start = moment().subtract(29, "days");
+      var end = moment();
+      $("#date-filter").daterangepicker(
+        {
+          startDate: start,
+          endDate: end,
+          ranges: {
+            "Cả Năm": [moment().startOf("year"), moment().endOf("year")],
+            "Hôm nay": [moment(), moment()],
+            "Hôm qua": [
+              moment().subtract(1, "days"),
+              moment().subtract(1, "days"),
+            ],
+            "7 ngày trước": [moment().subtract(6, "days"), moment()],
+            "30 ngày trước": [moment().subtract(29, "days"), moment()],
+            "Tháng Này": [moment().startOf("month"), moment().endOf("month")],
+            "Tháng Trước": [
+              moment().subtract(1, "month").startOf("month"),
+              moment().subtract(1, "month").endOf("month"),
+            ],
+          },
+           locale: {
+            "format": "DD/MM/YYYY",
+            "separator": " - ",
+            "applyLabel": "OK",
+            "cancelLabel": "Hủy",
+            "fromLabel": "Từ",
+            "toLabel": "Đến",
+            "customRangeLabel": "Chọn khoảng thời gian",
+            "weekLabel": "W",
+            "daysOfWeek": [
+                "CN",
+                "T2",
+                "T3",
+                "T4",
+                "T5",
+                "T5",
+                "T7"
+            ],
+            "monthNames": [
+                "Tháng 1",
+                "Tháng 2",
+                "Tháng 3",
+                "Tháng 4",
+                "Tháng 5",
+                "Tháng 6",
+                "Tháng 7",
+                "Tháng 8",
+                "Tháng 9",
+                "Tháng 10",
+                "Tháng 11",
+                "Tháng 12"
+            ],
+            "firstDay": 1
+        },
+        },
+        this.date_range_filter_callback
+      );
+      this.date_range_filter_callback(start, end);
+    },
+    date_range_filter_callback(start, end) {
+      let component = this;
+      $("#reportrange span").html(
+        start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY")
+      );
+      component.refresh_table_data(start, end)
+    },
+    refresh_table_data(start=null, end=null) {
+      if (this.table){
+        if (start && end) {
+          this.table.ajax.url(this.table_data_url + "?start=" + start.format('YYYY-MM-DD') + "&end=" + end.format('YYYY-MM-DD'))
+        }
+        this.table.ajax.reload();
+      }
+    }
+  }
 };
 </script>
 

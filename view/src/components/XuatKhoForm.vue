@@ -183,6 +183,8 @@ export default {
         });
 
       url = base_url + "/api/v1/xuat-kho/calculate-gia-goc"
+      params.id = this.form.id
+      params.input_date = this.form.input_date
       axios({
         method: 'get',
         url: url,

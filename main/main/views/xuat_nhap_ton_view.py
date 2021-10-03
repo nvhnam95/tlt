@@ -14,3 +14,12 @@ class XuatNhapTonView(ModelViewSet):
         res = super().destroy(request, *args, **kwargs)
         refresh_xnt(xnt_obj.pn_13)
         return res
+
+    def get_queryset(self):
+        start = self.request.query_params.get('start')
+        end = self.request.query_params.get('end')
+        if start and end:
+            queryset = XuatNhapTonModel.objects.filter(updated_on__range=[start, end])
+        else:
+            queryset = super().get_queryset()
+        return queryset

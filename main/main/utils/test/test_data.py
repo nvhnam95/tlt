@@ -104,7 +104,7 @@ def generate_test_data(request):
             }
             last_nhap_kho = NhapKhoModel.objects.filter(pn_13=validated_data["pn_13"]).last()
             if last_nhap_kho:
-                validated_data["gia_goc"] = calculate_gia_goc_xuat_kho(pn_13=pn_13)
+                validated_data["gia_goc"] = calculate_gia_goc_xuat_kho(pn_13=pn_13, calculate_date=input_date)
                 validated_data["gia_si"] = last_nhap_kho.gia_si
                 validated_data["gia_le"] = last_nhap_kho.gia_le
                 validated_data["english_des"] = last_nhap_kho.english_des

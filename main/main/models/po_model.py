@@ -22,3 +22,4 @@ class POModel(models.Model):
     lead_time = models.TextField(default='', blank=True)
     customer = models.TextField(default='', blank=True)
     remarks = models.TextField(default='', blank=True)
+    updated_on = models.DateField(auto_now_add=True)

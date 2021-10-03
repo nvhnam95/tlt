@@ -19,3 +19,4 @@ class XuatNhapTonModel(models.Model):
     bor_price = models.FloatField(default=0, blank=True)
     gia_si = models.FloatField(default=0, blank=True)
     gia_le = models.FloatField(default=0, blank=True)
+    updated_on = models.DateField(auto_now_add=True)

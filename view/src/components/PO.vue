@@ -11,13 +11,10 @@
         >Thêm Mới</b-button
       >
       &nbsp;
-      <b-button
-        @click="export_excel"
-        variant="primary"
-        >Export Excel</b-button
-      >
+      <b-button @click="export_excel" variant="primary">Export Excel</b-button>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
-
+      <p>Chọn ngày (ngày nhập):</p>
+      <input id="date-filter" /><br /><br />
       <b-modal
         id="modal-po-form"
         no-close-on-backdrop
@@ -63,6 +60,31 @@
           <th></th>
         </tr>
       </thead>
+        <tfoot>
+            <tr>
+          <th>PO. No</th>
+          <th>Pn 13</th>
+          <th>Pn 10</th>
+          <th>Bosch_No</th>
+          <th>Zexel_No</th>
+          <th>Stamping</th>
+          <th>Quốc Gia</th>
+          <th>English Name</th>
+          <th>Import Name<br />(Tên nhập khẩu)</th>
+          <th>App Name <br />(Tên Ứng Dụng)</th>
+          <th>Thuế VAT+TNK</th>
+          <th>Quantity</th>
+          <th>Giá Nhập DAP <br />(USD)</th>
+          <th>Extension Price <br />(USD)</th>
+          <th>Giá Vốn<br />Khởi Điểm</th>
+          <th>Giá Bán Sỉ <br />(VND)</th>
+          <th>Giá Bán Lẻ <br />(VND)</th>
+          <th>Lead Time</th>
+          <th>Customer</th>
+          <th>Remarks</th>
+          <th></th>
+            </tr>
+        </tfoot>
     </table>
   </div>
 </template>
@@ -77,60 +99,64 @@ import "datatables.net-dt/css/jquery.dataTables.min.css";
 
 import POForm from "./POForm.vue";
 import axios from "axios";
-import tool_mixin from "./tool_mixins.js" ;
-import moment from 'moment';
-
+import tool_mixin from "./tool_mixins.js";
+import moment from "moment";
+import "daterangepicker/daterangepicker";
+import "daterangepicker/daterangepicker.css";
 
 export default {
   mixins: [tool_mixin],
   data: function () {
     return {
       table: null,
-      export_file_name: 'PO_'+ moment().format('DD_MM_YYYY'),
+      export_file_name: "PO_" + moment().format("DD_MM_YYYY"),
       form_data: {},
       action: "Tạo",
       columns: [
-          { data: "po_no", width: 150 },
-          { data: "pn_13" },
-          { data: "pn_10" },
-          { data: "bosch_no" },
-          { data: "z_exel_no" },
-          { data: "stamping" },
-          { data: "country" },
-          { data: "english_des" },
-          { data: "import_des" },
-          { data: "app_des" },
-          { data: "tax" },
-          { data: "quantity" },
-          { data: "dap_price", render: $.fn.dataTable.render.number(",", ".", 2) },
-          {
-            data: "extension_price",
-            render: $.fn.dataTable.render.number(",", ".", 2),
-          },
-          { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
-          { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
-          { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
-          { data: "lead_time" },
-          { data: "customer" },
-          { data: "remarks" },
-          {
-            data: null,
-            width: 100,
-            defaultContent:
-              '<button type="button" action="edit" v-b-modal.modal-po-form class="btn btn-warning flat">Sửa</button>\
+        { data: "po_no", width: 150 },
+        { data: "pn_13" },
+        { data: "pn_10" },
+        { data: "bosch_no" },
+        { data: "z_exel_no" },
+        { data: "stamping" },
+        { data: "country" },
+        { data: "english_des" },
+        { data: "import_des" },
+        { data: "app_des" },
+        { data: "tax" },
+        { data: "quantity" },
+        {
+          data: "dap_price",
+          render: $.fn.dataTable.render.number(",", ".", 2),
+        },
+        {
+          data: "extension_price",
+          render: $.fn.dataTable.render.number(",", ".", 2),
+        },
+        { data: "gia_von", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "gia_si", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "gia_le", render: $.fn.dataTable.render.number(",", ".", 2) },
+        { data: "lead_time" },
+        { data: "customer" },
+        { data: "remarks" },
+        {
+          data: null,
+          width: 100,
+          defaultContent:
+            '<button type="button" action="edit" v-b-modal.modal-po-form class="btn btn-warning flat">Sửa</button>\
               <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
-          },
-        ]
+        },
+      ],
+      table_data_url: process.env.VUE_APP_API_ENDPOINT + "/api/v1/purchasing-orders"
     };
   },
   components: {
     "po-form": POForm,
   },
   mounted() {
-    let base_url = process.env.VUE_APP_API_ENDPOINT;
-    let url = base_url + "/api/v1/purchasing-orders";
+    let url = this.table_data_url
+    this.generate_search_boxes()
     var component = this;
-
     this.table = $("#poes_table").DataTable({
       ajax: {
         url: url,
@@ -143,7 +169,32 @@ export default {
         },
       ],
       columns: this.columns,
-      scrollX: true
+      scrollX: true,
+      initComplete: function () {
+        // Apply the search
+        this.api()
+          .columns()
+          .every(function () {
+            var that = this;
+            $("input", this.footer()).on("keyup change clear", function () {
+              if (that.search() !== this.value) {
+                if (this.value === "") {
+                  that.search("").draw();
+                } else {
+                  that.search("^" + this.value + "$", true, false).draw();
+                }
+              }
+            });
+          });
+      },
+      language: {
+        lengthMenu: "Hiển thị _MENU_ dòng",
+      },
+    });
+
+    $('#poes_table tfoot th').each( function () {
+      var title = $(this).text();
+      $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
     });
 
     $("#poes_table tbody").on("click", "button", function () {
@@ -163,8 +214,87 @@ export default {
     });
   },
   methods: {
-    refresh_table_data() {
-      this.table.ajax.reload();
+    generate_search_boxes(){
+      $('#poes_table tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
+      });
+
+      // Date range
+      var start = moment().subtract(29, "days");
+      var end = moment();
+      $("#date-filter").daterangepicker(
+        {
+          startDate: start,
+          endDate: end,
+          ranges: {
+            "Cả Năm": [moment().startOf("year"), moment().endOf("year")],
+            "Hôm nay": [moment(), moment()],
+            "Hôm qua": [
+              moment().subtract(1, "days"),
+              moment().subtract(1, "days"),
+            ],
+            "7 ngày trước": [moment().subtract(6, "days"), moment()],
+            "30 ngày trước": [moment().subtract(29, "days"), moment()],
+            "Tháng Này": [moment().startOf("month"), moment().endOf("month")],
+            "Tháng Trước": [
+              moment().subtract(1, "month").startOf("month"),
+              moment().subtract(1, "month").endOf("month"),
+            ],
+          },
+           locale: {
+            "format": "DD/MM/YYYY",
+            "separator": " - ",
+            "applyLabel": "OK",
+            "cancelLabel": "Hủy",
+            "fromLabel": "Từ",
+            "toLabel": "Đến",
+            "customRangeLabel": "Chọn khoảng thời gian",
+            "weekLabel": "W",
+            "daysOfWeek": [
+                "CN",
+                "T2",
+                "T3",
+                "T4",
+                "T5",
+                "T5",
+                "T7"
+            ],
+            "monthNames": [
+                "Tháng 1",
+                "Tháng 2",
+                "Tháng 3",
+                "Tháng 4",
+                "Tháng 5",
+                "Tháng 6",
+                "Tháng 7",
+                "Tháng 8",
+                "Tháng 9",
+                "Tháng 10",
+                "Tháng 11",
+                "Tháng 12"
+            ],
+            "firstDay": 1
+        },
+        },
+        this.date_range_filter_callback
+      );
+      this.date_range_filter_callback(start, end);
+    },
+    date_range_filter_callback(start, end) {
+      let component = this;
+      $("#reportrange span").html(
+        start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY")
+      );
+      component.refresh_table_data(start, end)
+    },
+    refresh_table_data(start=null, end=null) {
+      if (this.table){
+        if (start && end) {
+          this.table.ajax.url(this.table_data_url + "?start=" + start.format('YYYY-MM-DD') + "&end=" + end.format('YYYY-MM-DD'))
+        }
+        this.table.ajax.reload();
+      }
     },
     delete_po(id) {
       let base_url = process.env.VUE_APP_API_ENDPOINT;
