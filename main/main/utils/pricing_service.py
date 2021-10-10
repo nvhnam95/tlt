@@ -39,4 +39,4 @@ def calculate_gia_goc_xuat_kho(pn_13, xuat_kho_id=None, calculate_date=datetime.
         total_price = sum([nk.quantity * nk.gia_goc for nk in nhap_kho_till_recent_xuat_kho])
         total_amount = sum([nk.quantity for nk in nhap_kho_till_recent_xuat_kho])
         weighted_average_price = total_price / total_amount
-    return weighted_average_price
+    return round(weighted_average_price, 2)

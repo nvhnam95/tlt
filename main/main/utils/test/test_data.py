@@ -14,7 +14,7 @@ from main.utils.pricing_service import calculate_gia_goc_xuat_kho
 
 
 def generate_test_data(request):
-    loc = "main/utils/test/data.xlsx"
+    loc = "main/utils/test/data_1.xlsx"
 
     # To open Workbook
     wb = load_workbook(loc, data_only=True)
@@ -95,7 +95,10 @@ def generate_test_data(request):
         for row in range(8, 96):
             input_date = sheet_obj.cell(row=row, column=2).value
             if input_date:
-                input_date = input_date.strftime("%Y-%m-%d")
+                try:
+                    input_date = input_date.strftime("%Y-%m-%d")
+                except:
+                    print(input_date)
             pn_13 = sheet_obj.cell(row=row, column=3).value or ''
             validated_data = {
                 "input_date": input_date,

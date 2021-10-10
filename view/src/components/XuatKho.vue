@@ -11,10 +11,23 @@
         >Thêm Mới</b-button
       >
       &nbsp;
-      <b-button @click="export_excel" variant="primary">Export Excel</b-button>
+      <b-button @click="export_excel(['Tổng tiền gốc: ', tong_tien_goc + ' đ'])" variant="primary">Export Excel</b-button>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
-      <p>Chọn ngày (ngày nhập):</p>
-      <input id="date-filter" /><br /><br />
+
+      <table>
+        <tr>
+          <th>Từ Ngày</th>
+          <th>Đến ngày</th>
+          <th></th>
+          <th class="px-5">Tổng tiền gốc </th>
+        </tr>
+        <tr>
+          <td><input id="date-filter-start" /></td>
+          <td><input id="date-filter-end" /></td>
+          <td></td>
+          <td class="px-5" id="tong_tien_goc">{{tong_tien_goc}} đồng</td>
+        </tr>
+      </table> <br>
       <b-modal
         id="modal-xuat-kho-form"
         no-close-on-backdrop
@@ -72,11 +85,6 @@
 </template>
  
 <script>
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "jquery/dist/jquery.min.js";
-
-// import "datatables.net-dt/js/dataTables.dataTables";
-// import "datatables.net-dt/css/jquery.dataTables.min.css";
 import $ from "jquery";
 
 import axios from "axios";
@@ -90,6 +98,7 @@ export default {
   mixins: [tool_mixin],
   data: function () {
     return {
+      tong_tien_goc: 0,
       table: null,
       export_file_name: "xuat_kho_" + moment().format("DD_MM_YYYY"),
       form_data: {
@@ -101,7 +110,9 @@ export default {
       },
       action: "Tạo",
       columns: [
-        { data: "input_date" },
+        { data: "input_date",
+          render: function(data){return moment(data).format("DD/MM/YYYY");}
+        },
         { data: "pn_13" },
         { data: "quantity" },
         { data: "gia_goc", render: $.fn.dataTable.render.number(",", ".", 2) },
@@ -116,11 +127,13 @@ export default {
           data: null,
           width: 100,
           defaultContent:
-            '<button type="button" action="edit"  class="btn btn-warning flat">Sửa</button>\
-            <button type="button" action="delete" class="btn btn-danger flat">Xóa</button>',
+            '<button type="button"  action="edit"  class="btn btn-warning flat ">Sửa</button>\
+            <button type="button"  action="delete" class="btn btn-danger flat ">Xóa</button>',
         },
       ],
-      table_data_url: process.env.VUE_APP_API_ENDPOINT + "/api/v1/xuat-kho"
+      table_data_url: process.env.VUE_APP_API_ENDPOINT + "/api/v1/xuat-kho",
+      date_filter_start: null,
+      date_filter_end: null,
     };
   },
   components: {
@@ -145,21 +158,31 @@ export default {
       scrollX: true,
       autoWidth: true,
       initComplete: function () {
-        // Apply the search
-        this.api()
-          .columns()
-          .every(function () {
-            var that = this;
-            $("input", this.footer()).on("keyup change clear", function () {
-              if (that.search() !== this.value) {
-                if (this.value === "") {
-                  that.search("").draw();
-                } else {
-                  that.search("^" + this.value + "$", true, false).draw();
+          // Apply the search
+          this.api().columns().every( function () {
+              var that = this;
+              let column_data_src = this.dataSrc()
+              let allow_partial_search = ["pn_13", "english_des", "import_des", "app_des"]
+              $('input', this.footer()).on('keyup change clear', function () {
+                if (that.search() !== this.value) {
+                  if (this.value === ''){
+                      that.search("").draw();
+                  }
+                  else {
+                    if (allow_partial_search.includes(column_data_src)){
+                        that.search(this.value).draw();
+                    }
+                    else {
+                      that.search("^" + this.value + "$" , true, false).draw();
+                    }
+                  }
                 }
-              }
-            });
+              });
           });
+      },
+      drawCallback: function () {
+        var api = this.api();
+        component.tong_tien_goc = api.column( 4, {page:'current'} ).data().sum().toLocaleString()
       },
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
@@ -188,88 +211,6 @@ export default {
     });
   },
   methods: {
-    generate_search_boxes(){
-      $('#poes_table tfoot th').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Tìm '+title+'" />' );
-      });
-
-      // Date range
-      var start = moment().subtract(29, "days");
-      var end = moment();
-      $("#date-filter").daterangepicker(
-        {
-          startDate: start,
-          endDate: end,
-          ranges: {
-            "Cả Năm": [moment().startOf("year"), moment().endOf("year")],
-            "Hôm nay": [moment(), moment()],
-            "Hôm qua": [
-              moment().subtract(1, "days"),
-              moment().subtract(1, "days"),
-            ],
-            "7 ngày trước": [moment().subtract(6, "days"), moment()],
-            "30 ngày trước": [moment().subtract(29, "days"), moment()],
-            "Tháng Này": [moment().startOf("month"), moment().endOf("month")],
-            "Tháng Trước": [
-              moment().subtract(1, "month").startOf("month"),
-              moment().subtract(1, "month").endOf("month"),
-            ],
-          },
-           locale: {
-            "format": "DD/MM/YYYY",
-            "separator": " - ",
-            "applyLabel": "OK",
-            "cancelLabel": "Hủy",
-            "fromLabel": "Từ",
-            "toLabel": "Đến",
-            "customRangeLabel": "Chọn khoảng thời gian",
-            "weekLabel": "W",
-            "daysOfWeek": [
-                "CN",
-                "T2",
-                "T3",
-                "T4",
-                "T5",
-                "T5",
-                "T7"
-            ],
-            "monthNames": [
-                "Tháng 1",
-                "Tháng 2",
-                "Tháng 3",
-                "Tháng 4",
-                "Tháng 5",
-                "Tháng 6",
-                "Tháng 7",
-                "Tháng 8",
-                "Tháng 9",
-                "Tháng 10",
-                "Tháng 11",
-                "Tháng 12"
-            ],
-            "firstDay": 1
-        },
-        },
-        this.date_range_filter_callback
-      );
-      this.date_range_filter_callback(start, end);
-    },
-    date_range_filter_callback(start, end) {
-      let component = this;
-      $("#reportrange span").html(
-        start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY")
-      );
-      component.refresh_table_data(start, end)
-    },
-    refresh_table_data(start=null, end=null) {
-      if (this.table){
-        if (start && end) {
-          this.table.ajax.url(this.table_data_url + "?start=" + start.format('YYYY-MM-DD') + "&end=" + end.format('YYYY-MM-DD'))
-        }
-        this.table.ajax.reload();
-      }
-    },
     delete_po(id) {
       let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/xuat-kho" + "/" + id;

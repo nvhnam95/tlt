@@ -11,7 +11,9 @@
           v-model="form.input_date"
           type="text"
           :locale="locale"
+          v-on:input="update_gia_goc_descriptions"
         ></b-form-datepicker>
+
       </b-form-group>
 
       <b-form-group id="input-group-2" label="Pn 13:" label-for="pn-13">
