@@ -182,7 +182,7 @@ export default {
       },
       drawCallback: function () {
         var api = this.api();
-        component.tong_tien_goc = api.column( 4, {page:'current'} ).data().sum().toLocaleString()
+        component.tong_tien_goc = api.columns( 4, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",

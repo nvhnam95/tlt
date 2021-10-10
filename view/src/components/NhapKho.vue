@@ -234,7 +234,7 @@ export default {
       },
       drawCallback: function () {
         var api = this.api();
-        component.tong_extension_price = api.column( 14, {page:'current'} ).data().sum().toLocaleString()
+        component.tong_extension_price = api.column( 14, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
