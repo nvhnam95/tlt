@@ -12,17 +12,22 @@ from main.serializers.po_ser import POSerializer
 from main.serializers.xuat_kho_ser import XuatKhoSerializer
 from main.utils.pricing_service import calculate_gia_goc_xuat_kho
 
+total = 0
 
 def generate_test_data(request):
     loc = "main/utils/test/data_1.xlsx"
-
+    global total
     # To open Workbook
     wb = load_workbook(loc, data_only=True)
 
     if not POModel.objects.all():
         # PO
         sheet_obj = wb.worksheets[0]
-        for row in range(7, 247):
+        row = 7
+        while True:
+            pn_13 = sheet_obj.cell(row=row, column=2).value
+            if not pn_13:
+                break
             validated_data = {
                 "po_no": sheet_obj.cell(row=row, column=1).value or '',
                 "pn_13": sheet_obj.cell(row=row, column=2).value or '',
@@ -48,11 +53,16 @@ def generate_test_data(request):
             if not validated_data["gia_le"]:
                 validated_data["gia_le"] = validated_data["gia_si"] * 1.1
             POSerializer().create(validated_data)
+            row += 1
 
     if not NhapKhoModel.objects.all():
         # Nhap kho
         sheet_obj = wb.worksheets[1]
-        for row in range(4, 136):
+        row = 4
+        while True:
+            pn_13 = sheet_obj.cell(row=row, column=4).value
+            if not pn_13:
+                break
             input_date = None
             cell_value = sheet_obj.cell(row=row, column=1).value
             if type(cell_value) == datetime:
@@ -88,18 +98,23 @@ def generate_test_data(request):
                 validated_data["app_des"] = recent_po.app_des
                 validated_data["import_des"] = recent_po.import_des
             NhapKhoSerializer().create(validated_data)
+            row += 1
 
     if not XuatKhoModel.objects.all():
         # Xuat kho
         sheet_obj = wb.worksheets[2]
-        for row in range(8, 96):
+        row = 8
+        while True:
+            pn_13 = sheet_obj.cell(row=row, column=3).value or ''
+            if not pn_13:
+                break
             input_date = sheet_obj.cell(row=row, column=2).value
             if input_date:
-                try:
-                    input_date = input_date.strftime("%Y-%m-%d")
-                except:
-                    print(input_date)
-            pn_13 = sheet_obj.cell(row=row, column=3).value or ''
+                input_date = input_date.strftime("%Y-%m-%d")
+
+
+            if pn_13 == "0445020126391":
+                pass
             validated_data = {
                 "input_date": input_date,
                 "pn_13": pn_13,
@@ -117,5 +132,6 @@ def generate_test_data(request):
                 validated_data["customer"] = ""
 
             XuatKhoSerializer().create(validated_data)
+            row += 1
 
     return HttpResponse("Done")
