@@ -29,16 +29,16 @@ def generate_test_data(request):
             if not pn_13:
                 break
             validated_data = {
-                "po_no": sheet_obj.cell(row=row, column=1).value or '',
-                "pn_13": sheet_obj.cell(row=row, column=2).value or '',
-                "pn_10": sheet_obj.cell(row=row, column=3).value or '',
-                "bosch_no": sheet_obj.cell(row=row, column=4).value or '',
-                "z_exel_no": sheet_obj.cell(row=row, column=5).value or '',
-                "stamping": sheet_obj.cell(row=row, column=6).value or '',
-                "country": sheet_obj.cell(row=row, column=7).value or '',
-                "english_des": sheet_obj.cell(row=row, column=8).value or '',
-                "import_des": sheet_obj.cell(row=row, column=9).value or '',
-                "app_des": sheet_obj.cell(row=row, column=10).value or '',
+                "po_no": sheet_obj.cell(row=row, column=1).value.strip() or '',
+                "pn_13": str(sheet_obj.cell(row=row, column=2).value).strip() or '',
+                "pn_10": sheet_obj.cell(row=row, column=3).value.strip() or '',
+                "bosch_no": str(sheet_obj.cell(row=row, column=4).value).strip() or '',
+                "z_exel_no": sheet_obj.cell(row=row, column=5).value.strip() if sheet_obj.cell(row=row, column=5).value else '',
+                "stamping": sheet_obj.cell(row=row, column=6).value.strip() if sheet_obj.cell(row=row, column=6).value else '',
+                "country": sheet_obj.cell(row=row, column=7).value.strip() if sheet_obj.cell(row=row, column=7).value else '',
+                "english_des": sheet_obj.cell(row=row, column=8).value.strip() if sheet_obj.cell(row=row, column=8).value else '',
+                "import_des": sheet_obj.cell(row=row, column=9).value.strip() if sheet_obj.cell(row=row, column=9).value else '',
+                "app_des": sheet_obj.cell(row=row, column=10).value.strip() if sheet_obj.cell(row=row, column=10).value else '',
                 "quantity": sheet_obj.cell(row=row, column=11).value or 0,
                 "dap_price": round(sheet_obj.cell(row=row, column=12).value or 0, 3),
                 "extension_price": round(sheet_obj.cell(row=row, column=13).value or 0, 3),
@@ -46,9 +46,9 @@ def generate_test_data(request):
                 "gia_von": round(sheet_obj.cell(row=row, column=15).value or 0, 3),
                 "gia_si": round(sheet_obj.cell(row=row, column=16).value or 0, 3),
                 "gia_le": round(sheet_obj.cell(row=row, column=17).value or 0, 3),
-                "lead_time": sheet_obj.cell(row=row, column=18).value or '',
-                "customer": sheet_obj.cell(row=row, column=19).value or '',
-                "remarks": sheet_obj.cell(row=row, column=20).value or '',
+                "lead_time": sheet_obj.cell(row=row, column=18).value.strip() if sheet_obj.cell(row=row, column=18).value else '',
+                "customer": sheet_obj.cell(row=row, column=19).value.strip() if sheet_obj.cell(row=row, column=19).value else '',
+                "remarks": sheet_obj.cell(row=row, column=20).value.strip() if sheet_obj.cell(row=row, column=20).value else '',
             }
             if not validated_data["gia_le"]:
                 validated_data["gia_le"] = validated_data["gia_si"] * 1.1
@@ -69,13 +69,13 @@ def generate_test_data(request):
                 input_date = cell_value.strftime("%Y-%m-%d")
             validated_data = {
                 "input_date": input_date,
-                "license_no": sheet_obj.cell(row=row, column=2).value or '',
-                "provider": sheet_obj.cell(row=row, column=3).value or '',
-                "pn_13": sheet_obj.cell(row=row, column=4).value or '',
-                "pn_10": sheet_obj.cell(row=row, column=5).value or '',
-                "bosch_no": sheet_obj.cell(row=row, column=6).value or '',
-                "z_exel_no": sheet_obj.cell(row=row, column=7).value or '',
-                "stamping": sheet_obj.cell(row=row, column=8).value or '',
+                "license_no": sheet_obj.cell(row=row, column=2).value if sheet_obj.cell(row=row, column=2).value else '',
+                "provider": sheet_obj.cell(row=row, column=3).value.strip() or '',
+                "pn_13": sheet_obj.cell(row=row, column=4).value.strip() or '',
+                "pn_10": sheet_obj.cell(row=row, column=5).value.strip() or '',
+                "bosch_no": str(sheet_obj.cell(row=row, column=6).value).strip() if sheet_obj.cell(row=row, column=6).value else '',
+                "z_exel_no": sheet_obj.cell(row=row, column=7).value.strip() if sheet_obj.cell(row=row, column=7).value else '',
+                "stamping": sheet_obj.cell(row=row, column=8).value.strip() if sheet_obj.cell(row=row, column=8).value else '',
                 "gia_von": sheet_obj.cell(row=row, column=11).value or 0,
                 "gia_si": sheet_obj.cell(row=row, column=12).value or 0,
                 "gia_le": sheet_obj.cell(row=row, column=13).value or 0,
@@ -85,7 +85,7 @@ def generate_test_data(request):
                 "ratio": sheet_obj.cell(row=row, column=17).value or 0,
                 "tax": float(sheet_obj.cell(row=row, column=18).value or 0),
                 "vat_percentage":  int(re.search(r'\d+', sheet_obj.cell(row=row, column=19).value or 0).group()),
-                "po_no": sheet_obj.cell(row=row, column=20).value or '',
+                "po_no": sheet_obj.cell(row=row, column=20).value.strip()  if sheet_obj.cell(row=row, column=20).value else '',
             }
             validated_data["gia_goc"] = round(validated_data["dap_price"] * validated_data["ratio"] * validated_data["tax"], 3)
             validated_data["tong_gia_goc"] = round(validated_data["gia_goc"] * validated_data["quantity"], 3)
@@ -105,20 +105,19 @@ def generate_test_data(request):
         sheet_obj = wb.worksheets[2]
         row = 8
         while True:
-            pn_13 = sheet_obj.cell(row=row, column=3).value or ''
+            pn_13 = sheet_obj.cell(row=row, column=3).value.strip() if sheet_obj.cell(row=row, column=3).value else ""
             if not pn_13:
                 break
             input_date = sheet_obj.cell(row=row, column=2).value
             if input_date:
                 input_date = input_date.strftime("%Y-%m-%d")
 
-
             if pn_13 == "0445020126391":
                 pass
             validated_data = {
                 "input_date": input_date,
                 "pn_13": pn_13,
-                "quantity": sheet_obj.cell(row=row, column=6).value or '',
+                "quantity": sheet_obj.cell(row=row, column=6).value if sheet_obj.cell(row=row, column=6).value else '',
             }
             last_nhap_kho = NhapKhoModel.objects.filter(pn_13=validated_data["pn_13"]).last()
             if last_nhap_kho:
