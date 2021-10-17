@@ -12,16 +12,6 @@
       >
       <div id="start-date"></div>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
-      <table>
-        <tr>
-          <th>Từ Ngày</th>
-          <th>Đến ngày</th>
-        </tr>
-        <tr>
-          <td><input id="date-filter-start" /></td>
-          <td><input id="date-filter-end" /></td>
-        </tr>
-      </table> <br>
 
     </div>
     <table

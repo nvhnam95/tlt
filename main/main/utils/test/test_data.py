@@ -4,19 +4,21 @@ from django.http import HttpResponse
 from openpyxl import load_workbook
 import re
 
+from main.models.cost_model import CostModel
 from main.models.nhap_kho_model import NhapKhoModel
 from main.models.po_model import POModel
 from main.models.xuat_kho_model import XuatKhoModel
+from main.serializers.bosch_revenue_ser import BoschRevenueSerializer
+from main.serializers.cost_ser import CostSerializer
 from main.serializers.nhap_kho_ser import NhapKhoSerializer
 from main.serializers.po_ser import POSerializer
+from main.serializers.side_revenue_ser import SideRevenueSerializer
 from main.serializers.xuat_kho_ser import XuatKhoSerializer
 from main.utils.pricing_service import calculate_gia_goc_xuat_kho
 
-total = 0
 
 def generate_test_data(request):
     loc = "main/utils/test/data_1.xlsx"
-    global total
     # To open Workbook
     wb = load_workbook(loc, data_only=True)
 
@@ -133,4 +135,153 @@ def generate_test_data(request):
             XuatKhoSerializer().create(validated_data)
             row += 1
 
+    # Chi Phi
+    loc = "main/utils/test/chi_phi.xlsx"
+    # To open Workbook
+    wb = load_workbook(loc, data_only=True)
+
+    if not CostModel.objects.all():
+        # CPBANHANG
+        sheet_obj = wb.worksheets[0]
+        row = 8
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            major = sheet_obj.cell(row=row, column=3).value
+            client_code = sheet_obj.cell(row=row, column=4).value
+            content = sheet_obj.cell(row=row, column=5).value
+            value = sheet_obj.cell(row=row, column=6).value
+            cost_type = 'CPBANHANG'
+
+            validated_data = {
+                "date": date,
+                "major": major,
+                "client_code": client_code,
+                "content": content,
+                "value": value,
+                "cost_type": cost_type,
+            }
+            CostSerializer().create(validated_data)
+            row += 1
+
+        sheet_obj = wb.worksheets[1]
+        row = 7
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            major = sheet_obj.cell(row=row, column=3).value
+            client_code = sheet_obj.cell(row=row, column=4).value
+            content = sheet_obj.cell(row=row, column=5).value
+            value = sheet_obj.cell(row=row, column=6).value
+            cost_type = 'CPQUANLY'
+
+            validated_data = {
+                "date": date,
+                "major": major,
+                "client_code": client_code,
+                "content": content,
+                "value": value,
+                "cost_type": cost_type,
+            }
+            CostSerializer().create(validated_data)
+            row += 1
+
+        sheet_obj = wb.worksheets[2]
+        row = 7
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            major = sheet_obj.cell(row=row, column=3).value
+            client_code = sheet_obj.cell(row=row, column=4).value
+            content = sheet_obj.cell(row=row, column=5).value
+            value = sheet_obj.cell(row=row, column=6).value
+            cost_type = 'CPKHAC'
+
+            validated_data = {
+                "date": date,
+                "major": major,
+                "client_code": client_code,
+                "content": content,
+                "value": value,
+                "cost_type": cost_type,
+            }
+            CostSerializer().create(validated_data)
+            row += 1
+
+        sheet_obj = wb.worksheets[3]
+        row = 8
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            major = sheet_obj.cell(row=row, column=3).value
+            client_code = sheet_obj.cell(row=row, column=4).value
+            content = sheet_obj.cell(row=row, column=5).value
+            value = sheet_obj.cell(row=row, column=6).value
+            cost_type = 'THUCTECHI'
+
+            validated_data = {
+                "date": date,
+                "major": major,
+                "client_code": client_code,
+                "content": content,
+                "value": value,
+                "cost_type": cost_type,
+            }
+            CostSerializer().create(validated_data)
+            row += 1
+
+        sheet_obj = wb.worksheets[4]
+        row = 8
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            client_code = sheet_obj.cell(row=row, column=3).value
+            product_code = sheet_obj.cell(row=row, column=4).value
+            quantity = sheet_obj.cell(row=row, column=5).value or 0
+            price = sheet_obj.cell(row=row, column=6).value
+            total = sheet_obj.cell(row=row, column=7).value
+
+            validated_data = {
+                "date": date,
+                "product_code": product_code,
+                "client_code": client_code,
+                "quantity": quantity,
+                "price": price,
+                "total": total,
+            }
+            BoschRevenueSerializer().create(validated_data)
+            row += 1
+
+        sheet_obj = wb.worksheets[5]
+        row = 7
+        while True:
+            date = sheet_obj.cell(row=row, column=2).value
+            if not date:
+                break
+            client_code = sheet_obj.cell(row=row, column=3).value
+            accessory_code = sheet_obj.cell(row=row, column=4).value
+            quantity = sheet_obj.cell(row=row, column=5).value or 0
+            gia_von = sheet_obj.cell(row=row, column=6).value
+            tien_von = sheet_obj.cell(row=row, column=7).value
+            gia_ban = sheet_obj.cell(row=row, column=8).value
+            tien_ban = sheet_obj.cell(row=row, column=9).value
+            content = sheet_obj.cell(row=row, column=10).value
+            validated_data = {
+                "date": date,
+                "client_code": client_code,
+                "accessory_code": accessory_code,
+                "quantity": quantity,
+                "gia_von": gia_von,
+                "tien_von": tien_von,
+                "gia_ban": gia_ban,
+                "tien_ban": tien_ban,
+                "content": content,
+            }
+            SideRevenueSerializer().create(validated_data)
+            row += 1
     return HttpResponse("Done")

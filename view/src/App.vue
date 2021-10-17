@@ -32,25 +32,72 @@ export default {
           icon: "fa fa-home",
         },
         {
-          href: "/po",
-          title: "PO",
-          icon: "fa fa-shopping-cart",
+          title: 'Quản Lý Kho',
+          icon: 'fa fa-chart-area',
+          child: [
+            {
+              href: "/po",
+              title: "PO",
+              icon: "fa fa-shopping-cart",
+            },
+            {
+              href: "/nhap-kho",
+              title: "Nhập Kho",
+              icon: "fa fa-download",
+            },
+            {
+              href: "/xuat-kho",
+              title: "Xuất Kho",
+              icon: "fa fa-upload",
+            },
+            {
+              href: "/xuat-nhap-ton",
+              title: "Xuất-Nhập-Tồn",
+              icon: "fa fa-table",
+            },
+          ]
         },
         {
-          href: "/nhap-kho",
-          title: "Nhập Kho",
-          icon: "fa fa-download",
-        },
-        {
-          href: "/xuat-kho",
-          title: "Xuất Kho",
-          icon: "fa fa-upload",
-        },
-        {
-          href: "/xuat-nhap-ton",
-          title: "Xuất-Nhập-Tồn",
-          icon: "fa fa-table",
-        },
+          title: 'Quản Lý Chi Phí',
+          icon: 'fa fa-chart-area',
+          child: [
+            {
+              href: "/chi-phi-ban-hang",
+              title: "Chi phí bán hàng",
+              icon: "fa fa-shopping-cart",
+            },
+            {
+              href: "chi-phi-quan-ly",
+              title: "Chi phí quản lý",
+              icon: "fa fa-download",
+            },
+            {
+              href: "chi-phi-khac",
+              title: "Chi phí khác",
+              icon: "fa fa-upload",
+            },
+            {
+              href: "thuc-te-chi",
+              title: "Thực tế chi",
+              icon: "fa fa-table",
+            },
+            {
+              href: "doanh-thu-bosch",
+              title: "Doanh thu Bosch",
+              icon: "fa fa-table",
+            },
+            {
+              href: "doanh-thu-ngoai",
+              title: "Doanh thu ngoài",
+              icon: "fa fa-table",
+            },
+            {
+              href: "ket-qua-kinh-doanh",
+              title: "Kết quả kinh doanh",
+              icon: "fa fa-table",
+            }
+          ]
+        }
       ],
       isOnMobile: false,
       collapsed: false,

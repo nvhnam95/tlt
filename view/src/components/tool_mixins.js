@@ -17,7 +17,7 @@ var tool_mixin =  {
     } );
     },
     methods: {
-        export_excel(additional_data=null){
+        export_excel(additional_data=[]){
             let base_url = process.env.VUE_APP_API_ENDPOINT;
             let url = base_url + "/api/v1/tools/to-xlsx";
             let cell_raw_data = this.table.rows({filter:'applied'}).data()
@@ -41,8 +41,8 @@ var tool_mixin =  {
               }
               table_data.push(row)
             }
-            if (additional_data) 
-              table_data = [].concat([additional_data], [" "], [table_header_text], table_data)
+            if (additional_data.length) 
+              table_data = [].concat(additional_data, [" "], [table_header_text], table_data)
             else table_data = [].concat([table_header_text], table_data)
             // Download file
             axios({
@@ -152,17 +152,14 @@ var tool_mixin =  {
           refresh_table_data() {
             let start = this.date_filter_start
             let end = this.date_filter_end
-      
+
             if (this.table) {
               if (start && end) {
-                console.log(start.format("YYYY-MM-DD"))
-                console.log(end.format("YYYY-MM-DD"))
+                let url = new URL(this.table.ajax.url())
+                url.searchParams.set("start", start.format("YYYY-MM-DD"))
+                url.searchParams.set("end", end.format("YYYY-MM-DD"))
                 this.table.ajax.url(
-                  this.table_data_url +
-                    "?start=" +
-                    start.format("YYYY-MM-DD") +
-                    "&end=" +
-                    end.format("YYYY-MM-DD")
+                  url.href
                 );
               }
               this.table.ajax.reload();

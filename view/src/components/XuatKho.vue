@@ -11,7 +11,7 @@
         >Thêm Mới</b-button
       >
       &nbsp;
-      <b-button @click="export_excel(['Tổng tiền gốc: ', tong_tien_goc + ' đ'])" variant="primary">Export Excel</b-button>
+      <b-button @click="export_excel([['Tổng tiền gốc: ', tong_tien_goc + ' đ']])" variant="primary">Export Excel</b-button>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
 
       <table>
