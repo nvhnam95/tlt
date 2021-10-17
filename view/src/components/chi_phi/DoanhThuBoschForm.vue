@@ -1,7 +1,6 @@
 <template>
   <div>
     <b-form @submit="onSubmit" @close="onClose" v-if="show">
-
       <b-form-group id="input-group-1" label="Ngày:" label-for="date">
         <b-form-datepicker
           id="date"
@@ -11,7 +10,7 @@
         ></b-form-datepicker>
       </b-form-group>
 
-      <b-form-group id="input-group-1" label="Mã Khách Hàng:" label-for="major">
+      <b-form-group id="input-group-1" label="Mã Khách Hàng:" label-for="client_code">
         <b-form-input
           id="client_code"
           v-model="form.client_code"
@@ -19,19 +18,15 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group
-        id="product_code"
-        label="Mã Hàng:"
-        label-for="provider"
-      >
+      <b-form-group id="product_code" label="Mã Hàng:" label-for="product_code">
         <b-form-input
           id="product_code"
-          v-model="form.client_code"
+          v-model="form.product_code"
           type="text"
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-2" label="Số Lượng:" label-for="pn-13">
+      <b-form-group id="input-group-2" label="Số Lượng:" label-for="quantity">
         <b-form-input
           id="quantity"
           v-model="form.quantity"
@@ -39,7 +34,7 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-3" label="Giá Bán:" label-for="value">
+      <b-form-group id="input-group-3" label="Giá Bán:" label-for="price">
         <b-form-input
           id="price"
           type="text"
@@ -47,7 +42,7 @@
         ></b-form-input>
       </b-form-group>
 
-            <b-form-group id="input-group-3" label="Thành Tiền:" label-for="value">
+      <b-form-group id="input-group-3" label="Thành Tiền:" label-for="total">
         <b-form-input
           id="total"
           type="text"
@@ -55,17 +50,12 @@
         ></b-form-input>
       </b-form-group>
 
-        <br />
+      <br />
 
-        <div style="float: right">
-          <b-button type="submit" variant="light">{{ action }} </b-button>
-          <b-button @click="onClose" variant="light">Đóng</b-button>
-        </div>
-
-
-
-      
-
+      <div style="float: right">
+        <b-button type="submit" variant="light">{{ action }} </b-button>
+        <b-button @click="onClose" variant="light">Đóng</b-button>
+      </div>
     </b-form>
   </div>
 </template>
@@ -75,21 +65,26 @@ import axios from "axios";
 
 export default {
   name: "chi-phi-quan-ly-form",
-  props: ["form_data", "action", "resource_url_from_parent", "modal_name_from_parent", "resource_filter_from_parent"],
+  props: [
+    "form_data",
+    "action",
+    "resource_url_from_parent",
+    "modal_name_from_parent",
+    "resource_filter_from_parent",
+  ],
   data() {
     return {
       form:
         Object.keys(this.$props["form_data"]).length !== 0
           ? this.$props["form_data"]
           : {
-            cost_type: this.$props["resource_filter_from_parent"].cost_type,
-          },
+              cost_type: this.$props["resource_filter_from_parent"].cost_type,
+            },
       show: true,
       locale: "vi",
       resource_url: this.$props["resource_url_from_parent"],
       modal_name: this.$props["modal_name_from_parent"],
-
-    }
+    };
   },
   methods: {
     onSubmit(event) {
@@ -100,7 +95,7 @@ export default {
       let method = "post";
       if (this.form.id) {
         method = "put";
-        url.pathname += `/${this.form.id}`
+        url.pathname += `/${this.form.id}`;
       }
       axios({
         method: method,
@@ -113,9 +108,7 @@ export default {
             component.modal_name,
             "#btnShow"
           );
-          component.$root.$bvModal.msgBoxOk(
-            `Đã ${this.$props["action"]}`
-          );
+          component.$root.$bvModal.msgBoxOk(`Đã ${this.$props["action"]}`);
           component.$emit("refresh_table_data");
         })
         .catch(function (error) {
@@ -123,11 +116,7 @@ export default {
         });
     },
     onClose() {
-      this.$root.$emit(
-        "bv::hide::modal",
-        this.modal_name,
-        "#btnShow"
-      );
+      this.$root.$emit("bv::hide::modal", this.modal_name, "#btnShow");
       this.$emit("refresh_table_data");
     },
   },

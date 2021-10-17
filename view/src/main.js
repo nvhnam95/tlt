@@ -5,6 +5,7 @@ import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import './assets/css/main.css';
+import TrendChart from "vue-trend-chart";
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -31,6 +32,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueRouter)
 Vue.use(VueSidebarMenu)
+Vue.use(TrendChart);
 
 const router = new VueRouter({
   routes: [

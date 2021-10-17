@@ -12,6 +12,14 @@
       >
       <div id="start-date"></div>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
+      <table>
+        <tr>
+          <th class="">Tổng tiền Back Order:</th>
+        </tr>
+        <tr>
+          <td class=" " id="tong_tien_back_order">{{tong_tien_back_order}} USD</td>
+        </tr>
+      </table> <br>
 
     </div>
     <table
@@ -79,6 +87,7 @@ export default {
   mixins: [tool_mixin],
   data: function (){
     return {
+      tong_tien_back_order: 0,
       table: null,
       export_file_name: 'xuat_nhap_ton_' + moment().format('DD_MM_YYYY'),
       columns: [
@@ -115,6 +124,7 @@ export default {
   mounted() {
     let url = this.table_data_url
     this.generate_search_boxes()
+    let component = this
     this.table = $("#poes_table").DataTable({
       ajax: {
         url: url,
@@ -156,7 +166,11 @@ export default {
       },
       language : {
         "lengthMenu": "Hiển thị _MENU_ dòng"
-      }
+      },
+      drawCallback: function () {
+        var api = this.api();
+        component.tong_tien_back_order = api.column( 14, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
+      },
     });
   }
 };

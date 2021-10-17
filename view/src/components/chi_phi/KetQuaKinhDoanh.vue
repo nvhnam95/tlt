@@ -44,7 +44,7 @@ export default {
       form_name: "",
       modal_name: "",
       export_file_name: "ket_qua_kinh_doanh_" + moment().format("DD_MM_YYYY"),
-      show_table_footer: "false"
+      show_table_footer: "true"
     }
   }
 }

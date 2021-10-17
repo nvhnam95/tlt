@@ -33,7 +33,7 @@ export default {
         },
         {
           title: 'Quản Lý Kho',
-          icon: 'fa fa-chart-area',
+          icon: 'fa fa-archive',
           child: [
             {
               href: "/po",
@@ -59,42 +59,42 @@ export default {
         },
         {
           title: 'Quản Lý Chi Phí',
-          icon: 'fa fa-chart-area',
+          icon: 'fa fa-wallet',
           child: [
             {
               href: "/chi-phi-ban-hang",
               title: "Chi phí bán hàng",
-              icon: "fa fa-shopping-cart",
+              icon: "fa fa-sign-out-alt",
             },
             {
               href: "chi-phi-quan-ly",
               title: "Chi phí quản lý",
-              icon: "fa fa-download",
+              icon: "fa fa-user-friends",
             },
             {
               href: "chi-phi-khac",
               title: "Chi phí khác",
-              icon: "fa fa-upload",
+              icon: "fa fa-ellipsis-h",
             },
             {
               href: "thuc-te-chi",
               title: "Thực tế chi",
-              icon: "fa fa-table",
+              icon: "fa fa-comment-dollar",
             },
             {
               href: "doanh-thu-bosch",
               title: "Doanh thu Bosch",
-              icon: "fa fa-table",
+              icon: "fa fa-bold",
             },
             {
               href: "doanh-thu-ngoai",
               title: "Doanh thu ngoài",
-              icon: "fa fa-table",
+              icon: "fa fa-mail-bulk",
             },
             {
               href: "ket-qua-kinh-doanh",
               title: "Kết quả kinh doanh",
-              icon: "fa fa-table",
+              icon: "fa fa-file-contract",
             }
           ]
         }

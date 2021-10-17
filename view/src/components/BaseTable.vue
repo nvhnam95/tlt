@@ -187,7 +187,7 @@ export default {
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
       },
-      "pageLength": 50
+      pageLength: 50
     });
 
     $("#poes_table tfoot th").each(function () {

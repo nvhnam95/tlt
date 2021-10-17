@@ -152,9 +152,11 @@ var tool_mixin =  {
           refresh_table_data() {
             let start = this.date_filter_start
             let end = this.date_filter_end
-
+            console.log(start)
+            console.log(end)
             if (this.table) {
               if (start && end) {
+                console.log("x")
                 let url = new URL(this.table.ajax.url())
                 url.searchParams.set("start", start.format("YYYY-MM-DD"))
                 url.searchParams.set("end", end.format("YYYY-MM-DD"))

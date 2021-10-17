@@ -1,17 +1,16 @@
 <template>
-<div>
-  Home 
-  VUE_APP_API_ENDPOINT: {{VUE_APP_API_ENDPOINT}}
-</div>
+  <div id="app">
+    <!-- <Chart/> -->
+  </div>
 </template>
 
 <script>
+// import Chart from "./Chart.vue"
+
 export default {
-  data: function () {
-    return {
-       "VUE_APP_API_ENDPOINT": process.env.VUE_APP_API_ENDPOINT
-    }
+  name: 'App',
+  components: {
+    // Chart
   }
 }
-
 </script>

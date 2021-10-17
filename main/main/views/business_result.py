@@ -15,31 +15,18 @@ class BusinessResultView(APIView):
         start = request.query_params.get("start")
         end = request.query_params.get("end")
 
-        doanh_thu_bosch = 0
-        tong_gia_tri_von_goc = 0
-        chi_phi_ban_hang = 0
-        chi_phi_quan_ly = 0
-        chi_phi_khac = 0
-        doanh_thu_ngoai = 0
-        tong_extension_price = 0
-        tong_dap_price = 0
-        bor_price = 0
-
-        tong_gia_goc = 0
-        tong_tien_goc = 0
-
         if start and end:
-            doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__in=[start, end])])
-            doanh_thu_ngoai = sum([x for x in SideRevenueModel.objects.filter(date__in=[start, end])])
-            tong_gia_tri_von_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
-            chi_phi_ban_hang = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPBANHANG")])
-            chi_phi_quan_ly = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPQUANLY")])
-            chi_phi_khac = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPKHAC")])
-            tong_extension_price = sum([x.extension_price for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
-            tong_dap_price = sum([x.dap_price for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
-            bor_price = sum([x.bor_price for x in XuatNhapTonModel.objects.filter(updated_on__in=[start, end])])
-            tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
-            tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
+            doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__range=[start, end])])
+            doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.filter(date__range=[start, end])])
+            xuat_kho = XuatKhoModel.objects.filter(input_date__range=[start, end])
+            tong_gia_tri_von_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
+            chi_phi_ban_hang = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPBANHANG")])
+            chi_phi_quan_ly = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPQUANLY")])
+            chi_phi_khac = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPKHAC")])
+            tong_extension_price = sum([x.extension_price for x in NhapKhoModel.objects.filter(input_date__range=[start, end])])
+
+            tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(input_date__range=[start, end])])
+            tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
         else:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.all()])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.all()])
@@ -51,7 +38,6 @@ class BusinessResultView(APIView):
             chi_phi_khac = sum([x.value for x in CostModel.objects.filter(cost_type="CPKHAC")])
             tong_extension_price = sum(
                 [x.extension_price for x in NhapKhoModel.objects.all()])
-            tong_dap_price = sum([x.dap_price for x in NhapKhoModel.objects.all()])
             bor_price = sum([x.bor_price for x in XuatNhapTonModel.objects.all()])
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.all()])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
@@ -160,12 +146,7 @@ class BusinessResultView(APIView):
             {
                 "no": "",
                 "content": "Tổng giá trị nhập kho",
-                "value": tong_dap_price
-            },
-            {
-                "no": "",
-                "content": "BOR",
-                "value": bor_price
+                "value": tong_gia_goc
             },
             {
                 "no": "",
