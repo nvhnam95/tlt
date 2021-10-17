@@ -6,19 +6,18 @@ from main.models.cost_model import CostModel
 from main.models.nhap_kho_model import NhapKhoModel
 from main.models.side_revenue_model import SideRevenueModel
 from main.models.xuat_kho_model import XuatKhoModel
-from main.models.xuat_nhap_ton_model import XuatNhapTonModel
 
 
 class BusinessResultView(APIView):
 
     def get(self, request):
+        import time
+        time.sleep(0.05)
         start = request.query_params.get("start")
         end = request.query_params.get("end")
-
         if start and end:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__range=[start, end])])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.filter(date__range=[start, end])])
-            xuat_kho = XuatKhoModel.objects.filter(input_date__range=[start, end])
             tong_gia_tri_von_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
             chi_phi_ban_hang = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPBANHANG")])
             chi_phi_quan_ly = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPQUANLY")])
@@ -38,7 +37,6 @@ class BusinessResultView(APIView):
             chi_phi_khac = sum([x.value for x in CostModel.objects.filter(cost_type="CPKHAC")])
             tong_extension_price = sum(
                 [x.extension_price for x in NhapKhoModel.objects.all()])
-            bor_price = sum([x.bor_price for x in XuatNhapTonModel.objects.all()])
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.all()])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
 

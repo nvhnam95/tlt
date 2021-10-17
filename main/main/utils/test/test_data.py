@@ -235,7 +235,7 @@ def generate_test_data(request):
             row += 1
 
         sheet_obj = wb.worksheets[4]
-        row = 8
+        row = 7
         while True:
             date = sheet_obj.cell(row=row, column=2).value
             if not date:

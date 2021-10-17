@@ -23,6 +23,7 @@ import ThucTeChi from './components/chi_phi/ThucTeChi.vue'
 import DoanhThuBosch from './components/chi_phi/DoanhThuBosch.vue'
 import DoanhThungoai from './components/chi_phi/DoanhThuNgoai.vue'
 import KetQuaKinhDoanh from './components/chi_phi/KetQuaKinhDoanh.vue'
+import Login from './components/Login.vue'
 
 
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -95,11 +96,20 @@ const router = new VueRouter({
       path: '/ket-qua-kinh-doanh',
       name: 'Kết Quả Kinh Doanh',
       component: KetQuaKinhDoanh
-    }
-    
+    },    
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    }    
   ]
 })
+let isAuthenticated = true
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
+  else next()
 
+})
 new Vue({ // eslint-disable-line no-new
   el: '#app',
   router,
