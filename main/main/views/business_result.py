@@ -31,7 +31,7 @@ class BusinessResultView(APIView):
         if start and end:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__in=[start, end])])
             doanh_thu_ngoai = sum([x for x in SideRevenueModel.objects.filter(date__in=[start, end])])
-            tong_gia_tri_von_goc = sum([x.gia_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
+            tong_gia_tri_von_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
             chi_phi_ban_hang = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPBANHANG")])
             chi_phi_quan_ly = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPQUANLY")])
             chi_phi_khac = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPKHAC")])
@@ -43,7 +43,7 @@ class BusinessResultView(APIView):
         else:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.all()])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.all()])
-            tong_gia_tri_von_goc = sum([x.gia_goc for x in XuatKhoModel.objects.all()])
+            tong_gia_tri_von_goc = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
             chi_phi_ban_hang = sum(
                 [x.value for x in CostModel.objects.filter(cost_type="CPBANHANG")])
             chi_phi_quan_ly = sum(
