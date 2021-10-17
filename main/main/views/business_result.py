@@ -31,15 +31,15 @@ class BusinessResultView(APIView):
         if start and end:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__in=[start, end])])
             doanh_thu_ngoai = sum([x for x in SideRevenueModel.objects.filter(date__in=[start, end])])
-            tong_gia_tri_von_goc = sum([x.gia_goc for x in XuatKhoModel.objects.filter(date__in=[start, end])])
+            tong_gia_tri_von_goc = sum([x.gia_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
             chi_phi_ban_hang = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPBANHANG")])
             chi_phi_quan_ly = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPQUANLY")])
             chi_phi_khac = sum([x for x in CostModel.objects.filter(date__in=[start, end], cost_type="CPKHAC")])
-            tong_extension_price = sum([x.extension_price for x in NhapKhoModel.objects.filter(date__in=[start, end])])
-            tong_dap_price = sum([x.dap_price for x in NhapKhoModel.objects.filter(date__in=[start, end])])
-            bor_price = sum([x.bor_price for x in XuatNhapTonModel.objects.filter(date__in=[start, end])])
-            tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(date__in=[start, end])])
-            tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(date__in=[start, end])])
+            tong_extension_price = sum([x.extension_price for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
+            tong_dap_price = sum([x.dap_price for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
+            bor_price = sum([x.bor_price for x in XuatNhapTonModel.objects.filter(updated_on__in=[start, end])])
+            tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(input_date__in=[start, end])])
+            tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__in=[start, end])])
         else:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.all()])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.all()])
@@ -75,7 +75,7 @@ class BusinessResultView(APIView):
             {
                 "no": 4,
                 "content": "Tổng Giá trị vốn gốc",
-                "value": doanh_thu_bosch
+                "value": tong_gia_tri_von_goc
             },
             {
                 "no": 5,
