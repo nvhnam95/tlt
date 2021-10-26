@@ -125,7 +125,8 @@ export default {
     ThanhToanForm,
   },
   mounted() {
-    let url = this.resource_url;
+    let url = new URL(this.resource_url)
+    url.searchParams.set("khach_hang", this.khach_hang_id_from_parent)
     this.generate_search_boxes();
     var component = this;
     this.table = $(`#${this.table_id}`).DataTable({

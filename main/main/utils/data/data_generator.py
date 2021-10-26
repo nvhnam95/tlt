@@ -6,14 +6,18 @@ from django.contrib.auth.models import Permission, User
 from django.http import HttpResponse
 from openpyxl import load_workbook
 
+from main.models.cong_no_models import CongNoKhachHangModel, CongNoModel, CongNoPaymentModel
 from main.models.cost_model import CostModel
 from main.models.customer_model import CustomerModel
 from main.models.nhap_kho_model import NhapKhoModel
 from main.models.po_model import POModel
 from main.models.xuat_kho_model import XuatKhoModel
 from main.serializers.bosch_revenue_ser import BoschRevenueSerializer
+from main.serializers.cong_no_payment_ser import CongNoPaymentSerializer
+from main.serializers.cong_no_ser import CongNoSerializer
 from main.serializers.cost_ser import CostSerializer
 from main.serializers.customer_ser import CustomerSerializer
+from main.serializers.khach_hang_ser import CongNoKhachHangSerializer
 from main.serializers.nhap_kho_ser import NhapKhoSerializer
 from main.serializers.po_ser import POSerializer
 from main.serializers.side_revenue_ser import SideRevenueSerializer
@@ -340,4 +344,95 @@ def generate_test_data(request):
         for p in permissions:
             u.user_permissions.add(p)
             u.save()
+    # Cong No
+    if not CongNoKhachHangModel.objects.all():
+        loc = "main/utils/data/cong_no.xlsx"
+        # To open Workbook
+        wb = load_workbook(loc, data_only=True)
+        sheet_count = 0
+        try:
+            for sheet_count in range(0, 19):
+                # Each sheet
+                # Khach Hang
+                sheet_obj = wb.worksheets[sheet_count]
+                name = company = address = mst = ""
+                for row in range(1, 10):
+                    value = sheet_obj.cell(row=row, column=1).value
+                    if value == "To :":
+                        name = sheet_obj.cell(row=row, column=2).value
+                    if value == "Company":
+                        company = sheet_obj.cell(row=row, column=2).value
+                    if value == "Add :":
+                        address = sheet_obj.cell(row=row, column=2).value
+                    if value == "Tax code :":
+                        mst = sheet_obj.cell(row=row, column=2).value
+
+                validated_data = {
+                    "name": name or "",
+                    "company": company or "",
+                    "address": address or "",
+                    "note": "",
+                    "ma_so_thue": mst or "",
+                }
+                khach_hang = CongNoKhachHangSerializer().create(validated_data)
+
+                # Cong No
+                start_row = 1
+                while True:
+                    if sheet_obj.cell(row=start_row, column=9).value == "Thành Tiền":
+                        start_row += 2
+                        break
+                    start_row += 1
+                    if start_row > 50:
+                        raise Exception("Cannot found Thanh Tien")
+
+                while sheet_obj.cell(row=start_row, column=6).value != "Tổng cộng số tiền nợ :":
+                    if sheet_obj.cell(row=start_row, column=9).value:
+                        ngay_xuat_hang = sheet_obj.cell(row=start_row, column=1).value
+                        ma_bosch = sheet_obj.cell(row=start_row, column=2).value or ""
+                        ma_zxel = sheet_obj.cell(row=start_row, column=3).value or ""
+                        ma_tem = sheet_obj.cell(row=start_row, column=4).value or ""
+                        ten_tieng_anh = sheet_obj.cell(row=start_row, column=5).value or ""
+                        ten_tieng_viet = sheet_obj.cell(row=start_row, column=6).value or ""
+                        quantity = sheet_obj.cell(row=start_row, column=7).value or 0
+                        price = sheet_obj.cell(row=start_row, column=8).value or 0
+                        total = sheet_obj.cell(row=start_row, column=9).value or 0
+                        vat = sheet_obj.cell(row=start_row, column=10).value or 0
+
+                        validated_data = {
+                            "ngay_xuat_hang": ngay_xuat_hang,
+                            "bosch_no": ma_bosch,
+                            "zexel_no": ma_zxel,
+                            "ma_tem": ma_tem,
+                            "english_name": ten_tieng_anh,
+                            "vietnamese_name": ten_tieng_viet,
+                            "quantity": quantity,
+                            "price": price,
+                            "total": total,
+                            "vat": vat,
+                            "khach_hang": khach_hang
+                        }
+                        CongNoSerializer().create(validated_data)
+                    start_row += 1
+                # Thanh toan
+                start_row += 1
+                while sheet_obj.cell(row=start_row, column=6).value == "Đã thanh toán ngày :":
+                    x = sheet_obj.cell(row=start_row, column=6).value
+                    if sheet_obj.cell(row=start_row, column=11).value:
+                        so_tien = sheet_obj.cell(row=start_row, column=11).value
+                        ngay_thanh_toan = sheet_obj.cell(row=start_row, column=10).value or None
+
+                        validated_data = {
+                            "amount": so_tien,
+                            "date": ngay_thanh_toan,
+                            "khach_hang": khach_hang
+
+                        }
+                        CongNoPaymentSerializer().create(validated_data)
+                    start_row += 1
+            # 1/0
+        except Exception as e:
+            print(e)
+
+
     return HttpResponse("Done")

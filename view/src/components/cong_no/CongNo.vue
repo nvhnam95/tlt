@@ -190,9 +190,9 @@ export default {
         { data: "english_name" },
         { data: "vietnamese_name" },
         { data: "quantity" },
-        { data: "price" },
+        { data: "price", render: $.fn.dataTable.render.number(",", ".", 2)},
         { data: "vat" },
-        { data: "total" },
+        { data: "total", render: $.fn.dataTable.render.number(",", ".", 2)},
         {
           data: null,
           width: 100,
@@ -211,7 +211,7 @@ export default {
             return moment(data).format("DD/MM/YYYY");
           },
         },
-        { data: "amount" },
+        { data: "amount", render: $.fn.dataTable.render.number(",", ".", 2)},
         { data: "note" },
         {
           data: null,

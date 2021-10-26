@@ -7,8 +7,6 @@ class PageAccessModel(models.Model):
         default_permissions = ()
 
         permissions = (
-            ('can_view_home', 'Home Page'),
-
             ('can_view_po', 'PO Page'),
             ('can_view_nhap_kho', 'Nhap Kho Page'),
             ('can_view_xuat_kho', 'Xuat Kho Page'),
