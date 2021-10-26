@@ -375,7 +375,7 @@ export default {
       })
         .then(() => {
           component.$root.$emit("bv::hide::modal", "modal-nhap-kho-form", "#btnShow");
-          component.$root.$bvModal.msgBoxOk(`Đã ${this.$props["action"]} Nhập Kho`);
+          component.$root.$bvModal.msgBoxOk(`Đã ${this.$props["action"]}`);
           component.$emit("refresh_table_data");
         })
         .catch(function (error) {

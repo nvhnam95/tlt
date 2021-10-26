@@ -10,7 +10,7 @@
   :modal_name_from_parent=modal_name
   :resource_filter_from_parent=resource_filter
   :export_file_name_from_parent=export_file_name
-  :show_table_footer_from_parent=show_table_footer
+  :hide_table_footer_from_parent=hide_table_footer
   />
 </div>
 
@@ -44,7 +44,7 @@ export default {
       form_name: "",
       modal_name: "",
       export_file_name: "ket_qua_kinh_doanh_" + moment().format("DD_MM_YYYY"),
-      show_table_footer: "true"
+      hide_table_footer: "true"
     }
   }
 }

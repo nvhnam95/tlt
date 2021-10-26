@@ -11,7 +11,6 @@ var tool_mixin =  {
             if ( typeof b === 'string' ) {
                 b = b.replace(/[^\d.-]/g, '') * 1;
             }
-     
             return a + b;
         }, 0 );
     } );
@@ -60,7 +59,8 @@ var tool_mixin =  {
             });
           },
           generate_search_boxes() {
-            $("#poes_table tfoot th").each(function () {
+            let table_id = this.table_id || "poes_table"
+            $(`#${table_id} tfoot th`).each(function () {
               var title = $(this).text();
               $(this).html('<input type="text" placeholder="Tìm ' + title + '" />');
             });

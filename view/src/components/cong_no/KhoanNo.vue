@@ -5,13 +5,8 @@
     <div>
       <b-button @click="show_modal" variant="primary">Thêm Mới</b-button>
       &nbsp;
-      <b-button
-        @click="export_excel(get_serialized_total_data_info())"
-        variant="primary"
-        >Export Excel</b-button
-      >
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
-      <table>
+      <table v-if="false">
         <tr>
           <th>Từ Ngày</th>
           <th>Đến ngày</th>
@@ -25,8 +20,8 @@
           </th>
         </tr>
         <tr>
-          <td><input id="date-filter-start" /></td>
-          <td><input id="date-filter-end" /></td>
+          <td><input id="date-filter-start-khoan-no" /></td>
+          <td><input id="date-filter-end-khoan-no" /></td>
           <td></td>
           <td
             class="px-5"
@@ -39,16 +34,15 @@
       </table>
       <br />
       <b-modal :id="modal_name" no-close-on-backdrop hide-header-close>
-        <component
-          v-bind:is="form_name"
+        <KhoanNoForm
           @refresh_table_data="refresh_table_data"
           :resource_url_from_parent="resource_url"
           :form_data="form_data"
           :action="action"
           :modal_name_from_parent="modal_name"
           :resource_filter_from_parent="resource_filter"
+          :khach_hang_id_from_parent="khach_hang_id_from_parent"
         />
-
         <template #modal-footer>
           <br />
         </template>
@@ -61,6 +55,7 @@
       <thead>
         <tr>
           <th v-for="item in column_names" v-bind:key="item">{{ item }}</th>
+          <th style="min-width: 100px" ></th>
         </tr>
       </thead>
       <tfoot v-if=!hide_table_footer>
@@ -76,16 +71,18 @@
 import $ from "jquery";
 
 import axios from "axios";
-import ChiPhiForm from "./chi_phi/ChiPhiForm.vue";
-import DoanhThuBoschForm from "./chi_phi/DoanhThuBoschForm.vue";
-import DoanhThuNgoaiForm from "./chi_phi/DoanhThuNgoaiForm.vue";
-import CustomerForm from "./CustomerForm.vue";
-import UserForm from "./UserForm.vue";
-import tool_mixin from "./tool_mixins.js";
+import KhoanNoForm from "./KhoanNoForm.vue";
+import tool_mixin from "../tool_mixins.js";
 import "daterangepicker/daterangepicker";
 import "daterangepicker/daterangepicker.css";
+import moment from "moment";
 
 export default {
+  watch: {
+    khach_hang_id_from_parent(){
+      this.refresh_table_data()
+    }
+  },
   mixins: [tool_mixin],
   props: [
     "title",
@@ -98,7 +95,8 @@ export default {
     "resource_filter_from_parent",
     "export_file_name_from_parent",
     "hide_table_footer_from_parent",
-    "table_id_from_parent"
+    "table_id_from_parent",
+    "khach_hang_id_from_parent"
   ],
   data: function () {
     return {
@@ -128,19 +126,17 @@ export default {
     };
   },
   components: {
-    ChiPhiForm,
-    DoanhThuBoschForm,
-    DoanhThuNgoaiForm,
-    CustomerForm,
-    UserForm
+    KhoanNoForm
   },
   mounted() {
-    let url = this.resource_url;
+    let url = new URL(this.resource_url);
+    url.searchParams.set("khach_hang", this.khach_hang_id_from_parent)
     this.generate_search_boxes();
     var component = this;
     this.table = $(`#${this.table_id}`).DataTable({
+      pageLength: 50,
       ajax: {
-        url: url,
+        url: url.href,
         dataSrc: "",
       },
       columnDefs: [
@@ -152,48 +148,13 @@ export default {
       columns: this.columns,
       scrollX: true,
       autoWidth: true,
-      initComplete: function () {
-        // Apply the search
-        this.api()
-          .columns()
-          .every(function () {
-            var that = this;
-            let column_data_src = this.dataSrc();
-            let allow_partial_search = [
-              "pn_13",
-              "english_des",
-              "import_des",
-              "app_des",
-            ];
-            $("input", this.footer()).on("keyup change clear", function () {
-              if (that.search() !== this.value) {
-                if (this.value === "") {
-                  that.search("").draw();
-                } else {
-                  if (allow_partial_search.includes(column_data_src)) {
-                    that.search(this.value).draw();
-                  } else {
-                    that.search("^" + this.value + "$", true, false).draw();
-                  }
-                }
-              }
-            });
-          });
-      },
-      drawCallback: function () {
-        var api = this.api();
-        for (let d of component.total_data_info) {
-          d.value = api
-            .columns(d.column_index, { page: "all", search: "applied" })
-            .data()
-            .sum()
-            .toLocaleString();
-        }
-      },
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
       },
-      pageLength: 50
+      drawCallback: function () {
+        var api = this.api();
+        component.$emit("update_tong_no", api.column( 9, {page:'all', search: 'applied'} ).data().sum())
+      },
     });
 
     $(`#${this.table_id} tfoot th`).each(function () {
@@ -217,6 +178,86 @@ export default {
     });
   },
   methods: {
+          generate_search_boxes() {
+            let table_id = this.table_id || "poes_table"
+            $(`#${table_id} tfoot th`).each(function () {
+              var title = $(this).text();
+              $(this).html('<input type="text" placeholder="Tìm ' + title + '" />');
+            });
+      
+            // Date range
+            var start = moment();
+            var end = moment();
+            $("#date-filter-start-khoan-no").daterangepicker(
+              {
+                singleDatePicker: true,
+                locale: {
+                  format: "DD/MM/YYYY",
+                  separator: " - ",
+                  applyLabel: "OK",
+                  cancelLabel: "Hủy",
+                  fromLabel: "Từ",
+                  toLabel: "Đến",
+                  customRangeLabel: "Chọn khoảng thời gian",
+                  weekLabel: "W",
+                  daysOfWeek: ["CN", "T2", "T3", "T4", "T5", "T5", "T7"],
+                  monthNames: [
+                    "Tháng 1",
+                    "Tháng 2",
+                    "Tháng 3",
+                    "Tháng 4",
+                    "Tháng 5",
+                    "Tháng 6",
+                    "Tháng 7",
+                    "Tháng 8",
+                    "Tháng 9",
+                    "Tháng 10",
+                    "Tháng 11",
+                    "Tháng 12",
+                  ],
+                  firstDay: 1,
+                },
+              },
+              this.date_range_filter_callback_for_start
+            );
+      
+            $("#date-filter-end-khoan-no").daterangepicker(
+              {
+                singleDatePicker: true,
+                startDate: start,
+                endDate: end,
+                locale: {
+                  format: "DD/MM/YYYY",
+                  separator: " - ",
+                  applyLabel: "OK",
+                  cancelLabel: "Hủy",
+                  fromLabel: "Từ",
+                  toLabel: "Đến",
+                  customRangeLabel: "Chọn khoảng thời gian",
+                  weekLabel: "W",
+                  daysOfWeek: ["CN", "T2", "T3", "T4", "T5", "T5", "T7"],
+                  monthNames: [
+                    "Tháng 1",
+                    "Tháng 2",
+                    "Tháng 3",
+                    "Tháng 4",
+                    "Tháng 5",
+                    "Tháng 6",
+                    "Tháng 7",
+                    "Tháng 8",
+                    "Tháng 9",
+                    "Tháng 10",
+                    "Tháng 11",
+                    "Tháng 12",
+                  ],
+                  firstDay: 1,
+                },
+              },
+              this.date_range_filter_callback_for_end
+            );
+            $('input[id="date-filter-start-khoan-no"]').val("")
+            $('input[id="date-filter-end-khoan-no"]').val("")
+          },
     get_serialized_total_data_info() {
       // Return a list of list
       if (this.total_data_info.length) {
@@ -239,6 +280,12 @@ export default {
         this.refresh_table_data();
       });
     },
+    refresh_table_data(){
+      let url = new URL(this.table.ajax.url())
+      url.searchParams.set("khach_hang", this.khach_hang_id_from_parent)
+      this.table.ajax.url(url.href);
+      this.table.ajax.reload();
+    }
   },
 };
 </script>

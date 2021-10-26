@@ -24,10 +24,15 @@ import DoanhThuBosch from './components/chi_phi/DoanhThuBosch.vue'
 import DoanhThungoai from './components/chi_phi/DoanhThuNgoai.vue'
 import KetQuaKinhDoanh from './components/chi_phi/KetQuaKinhDoanh.vue'
 import Login from './components/Login.vue'
+import Customer from './components/Customer.vue'
+import CongNo from './components/cong_no/CongNo.vue'
+import User from './components/User.vue'
+import TaiKhoan from './components/TaiKhoan.vue'
 
 
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
+// import axios from "axios";
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
@@ -101,12 +106,42 @@ const router = new VueRouter({
       path: '/login',
       name: 'Login',
       component: Login
-    }    
+    },
+    {
+      path: '/cong-no',
+      name: 'CongNo',
+      component: CongNo
+    },
+    {
+      path: '/customer',
+      name: 'Customer',
+      component: Customer
+    },
+    {
+      path: '/user',
+      name: 'User',
+      component: User
+    },
+    {
+      path: '/tai-khoan',
+      name: 'TaiKhoan',
+      component: TaiKhoan
+    }
   ]
 })
-let isAuthenticated = true
+
+// let current_user = {}
+
+// let auth_url = process.env.VUE_APP_API_ENDPOINT + "/api/v1/current-user"
+
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
+  let is_authenticated = localStorage.getItem("is_authenticated")
+  // let token = localStorage.getItem("token")
+  // axios.get(auth_url, headers= {'Authentication': "Bearer " + token}).then((response) => {
+  //   console.log(response.data)
+  // })
+
+  if (to.name !== 'Login' && !is_authenticated) next({ name: 'Login' })
   else next()
 
 })

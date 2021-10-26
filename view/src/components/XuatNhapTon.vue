@@ -126,6 +126,7 @@ export default {
     this.generate_search_boxes()
     let component = this
     this.table = $("#poes_table").DataTable({
+      pageLength: 50,
       ajax: {
         url: url,
         dataSrc: "",

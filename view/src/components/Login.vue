@@ -23,6 +23,7 @@
                   type="text"
                   placeholder="Tài khoản"
                   required
+                  v-on:input="is_failed=false"
                 ></b-form-input
                 ><br />
 
@@ -32,7 +33,14 @@
                   type="password"
                   placeholder="Mật khẩu"
                   required
+                  v-on:input="is_failed=false"
                 ></b-form-input>
+
+                <b-alert v-model="is_failed" variant="danger">{{message}}</b-alert>
+
+                <!-- <span style="float: left, color:red" v-if="is_failed">{{message}}</span> -->
+
+
                 <div style="float: left">
                   <b-button @click="onSubmit" variant="light">Đăng nhập</b-button>
                 </div>
@@ -47,13 +55,18 @@
 
 <script>
 import $ from "jquery";
+import axios from "axios";
 
 export default {
   mounted() {
     $(".v-sidebar-menu").hide();
+    if (localStorage.getItem("is_authenticated"))
+      window.location.href = "/";
   },
   data() {
     return {
+      message: "",
+      is_failed: false,
       form: {
         username: "",
         password: "",
@@ -62,8 +75,30 @@ export default {
   },
   methods: {
     onSubmit(event) {
+      let component = this
       event.preventDefault();
-      alert(JSON.stringify(this.form));
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
+      let url = base_url + "/api-token-auth/";
+      let method = "post";
+      if (this.form.id) {
+        method = "put";
+        url = `${url}/${this.form.id}`;
+      }
+      axios({
+        method: method,
+        url: url,
+        data: component.form,
+      })
+        .then((response) => {
+          localStorage.setItem("token", response.data.token)
+          localStorage.setItem("is_authenticated", true)
+          
+          location.reload()
+        })
+        .catch(function () {
+          component.is_failed = true
+          component.message = "Sai tài khoản hoặc mật khẩu"
+        });
     },
   },
 };
@@ -150,5 +185,8 @@ form {
 .btn:focus {
   background-color: #008080;
   color: #fff;
+}
+.container-fluid{
+  padding-right: 200px;
 }
 </style>

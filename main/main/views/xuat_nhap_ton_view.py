@@ -22,4 +22,4 @@ class XuatNhapTonView(ModelViewSet):
             queryset = XuatNhapTonModel.objects.filter(updated_on__range=[start, end]).filter(so_luong_nhap__gt=0)
         else:
             queryset = super().get_queryset().filter(so_luong_nhap__gt=0)
-        return queryset
+        return queryset.order_by("-id")

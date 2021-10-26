@@ -75,7 +75,6 @@ export default {
   async mounted() {
     const ctx = document.getElementById("chart");
     this.chart = new Chart(ctx, this.chart_data);
-    console.log(this.chart)
     this.addData(this.this_day_last_year)
   },
   methods: {
@@ -88,13 +87,11 @@ export default {
       
       await axios.get(url.href, {}).then((response) => {
         let label = month.format("MM-YYYY")
-        console.log(month.startOf("month").format("YYYY-MM-DD"))
         component.chart.data.labels.push(label);
         component.chart.data.datasets[0].data.push(response.data[0].value)
         component.chart.data.datasets[1].data.push(response.data[4].value)
         component.chart.data.datasets[2].data.push(response.data[11].value)
         component.chart.data.datasets[3].data.push(response.data[20].value)
-        console.log(response.data[0].value)
         component.chart.update();
       });
       if (month < moment().subtract(1, 'M')){
@@ -104,3 +101,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+#chart {
+  padding-bottom: 50px !important;
+}
+</style>

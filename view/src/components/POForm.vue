@@ -236,7 +236,7 @@ export default {
         data: this.form
       }).then(() => {
         component.$root.$emit('bv::hide::modal', 'modal-po-form', '#btnShow')
-        component.$root.$bvModal.msgBoxOk(`Đã ${this.$props['action']} PO`)
+        component.$root.$bvModal.msgBoxOk(`Đã ${this.$props['action']}`)
         component.$emit('refresh_table_data')
       }).catch(function (error) {
         alert(error);

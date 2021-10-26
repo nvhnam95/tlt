@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from main.models.bosch_revenue_model import BoschRevenueModel
 from main.models.cost_model import CostModel
 from main.models.nhap_kho_model import NhapKhoModel
+from main.models.po_model import POModel
 from main.models.side_revenue_model import SideRevenueModel
 from main.models.xuat_kho_model import XuatKhoModel
 
@@ -22,7 +23,7 @@ class BusinessResultView(APIView):
             chi_phi_ban_hang = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPBANHANG")])
             chi_phi_quan_ly = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPQUANLY")])
             chi_phi_khac = sum([x.value for x in CostModel.objects.filter(date__range=[start, end], cost_type="CPKHAC")])
-            tong_extension_price = sum([x.extension_price for x in NhapKhoModel.objects.filter(input_date__range=[start, end])])
+            tong_extension_price = sum([x.extension_price for x in POModel.objects.filter(updated_on__range=[start, end])])
 
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(input_date__range=[start, end])])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
@@ -36,7 +37,7 @@ class BusinessResultView(APIView):
                 [x.value for x in CostModel.objects.filter(cost_type="CPQUANLY")])
             chi_phi_khac = sum([x.value for x in CostModel.objects.filter(cost_type="CPKHAC")])
             tong_extension_price = sum(
-                [x.extension_price for x in NhapKhoModel.objects.all()])
+                [x.extension_price for x in POModel.objects.all()])
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.all()])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
 
