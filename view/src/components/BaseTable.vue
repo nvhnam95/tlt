@@ -180,6 +180,7 @@ export default {
             });
           });
       },
+      "aaSorting": [],
       drawCallback: function () {
         var api = this.api();
         for (let d of component.total_data_info) {

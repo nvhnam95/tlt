@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from main.models.bosch_revenue_model import BoschRevenueModel
+from main.models.cong_no_models import CongNoModel, CongNoPaymentModel
 from main.models.cost_model import CostModel
 from main.models.nhap_kho_model import NhapKhoModel
 from main.models.po_model import POModel
@@ -27,6 +28,13 @@ class BusinessResultView(APIView):
 
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.filter(input_date__range=[start, end])])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
+
+            # Cong no chua thu
+            tong_tien_no = sum([x.total for x in CongNoModel.objects.filter(ngay_xuat_hang__range=[start, end])])
+            tong_tien_da_thu = sum([x.amount for x in CongNoPaymentModel.objects.filter(date__range=[start, end])])
+
+            cong_no_chua_thu = tong_tien_no - tong_tien_da_thu
+
         else:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.all()])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.all()])
@@ -41,6 +49,11 @@ class BusinessResultView(APIView):
             tong_gia_goc = sum([x.tong_gia_goc for x in NhapKhoModel.objects.all()])
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
 
+            # Cong no chua thu
+            tong_tien_no = sum([x.total for x in CongNoModel.objects.all()])
+            tong_tien_da_thu = sum([x.amount for x in CongNoPaymentModel.objects.all()])
+
+            cong_no_chua_thu = tong_tien_no - tong_tien_da_thu
         data = [
             {
                 "no": 1,
@@ -135,7 +148,7 @@ class BusinessResultView(APIView):
             {
                 "no": "",
                 "content": "Công nợ chưa thu khách hàng",
-                "value": ""
+                "value": cong_no_chua_thu
             },
             {
                 "no": "",

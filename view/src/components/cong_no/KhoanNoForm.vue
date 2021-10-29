@@ -65,6 +65,7 @@
           id="quantity"
           type="text"
           v-model="form.quantity"
+          v-on:input="update_thanh_tien"
         ></b-form-input>
       </b-form-group>
       <b-form-group id="input-group-3" label="Đơn Giá:" label-for="price">
@@ -72,6 +73,7 @@
           id="price"
           type="text"
           v-model="form.price"
+          v-on:input="update_thanh_tien"
         ></b-form-input>
       </b-form-group>
       <b-form-group id="input-group-3" label="VAT:" label-for="vat">
@@ -124,6 +126,11 @@ export default {
     };
   },
   methods: {
+    update_thanh_tien(){
+      if (this.form.quantity && this.form.price){
+        this.form.total = this.form.quantity * this.form.price
+      }
+    },
     onSubmit(event) {
       event.preventDefault();
       let component = this;

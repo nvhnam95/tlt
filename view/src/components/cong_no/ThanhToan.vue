@@ -141,6 +141,7 @@ export default {
           targets: "_all",
         },
       ],
+      "aaSorting": [],
       columns: this.columns,
       scrollX: true,
       autoWidth: true,

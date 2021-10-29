@@ -29,8 +29,7 @@
       <thead>
         <tr>
           <!-- <th>No.</th> -->
-          <th>Ứng Dụng</th>
-          <th>Pn 13</th>
+          <th>Pn 10</th>
           <th>Bosch No</th>
           <th>Zexel No</th>
           <th>Stamping</th>
@@ -51,8 +50,7 @@
               <tfoot>
             <tr>
           <!-- <th>No.</th> -->
-          <th>Ứng Dụng</th>
-          <th>Pn 13</th>
+          <th>Pn 10</th>
           <th>Bosch No</th>
           <th>Zexel No</th>
           <th>Stamping</th>
@@ -91,8 +89,7 @@ export default {
       table: null,
       export_file_name: 'xuat_nhap_ton_' + moment().format('DD_MM_YYYY'),
       columns: [
-        { data: "ung_dung" },
-        { data: "pn_13" },
+        { data: "pn_10" },
         { data: "bosch_no" },
         { data: "xecel_no" },
         { data: "stamping" },
@@ -146,7 +143,7 @@ export default {
           this.api().columns().every( function () {
               var that = this;
               let column_data_src = this.dataSrc()
-              let allow_partial_search = ["pn_13", "english_des", "import_des", "app_des"]
+              let allow_partial_search = ["pn_13", "english_des", "import_des", "app_des", "pn_10", "stamping"]
               $('input', this.footer()).on('keyup change clear', function () {
                 if (that.search() !== this.value) {
                   if (this.value === ''){

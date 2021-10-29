@@ -25,4 +25,4 @@ class SideRevenueView(ModelViewSet):
             queryset = SideRevenueModel.objects.filter(date__range=[start, end])
         else:
             queryset = super().get_queryset()
-        return queryset
+        return queryset.order_by("-date")

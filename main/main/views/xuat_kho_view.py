@@ -38,4 +38,4 @@ class XuatKhoView(ModelViewSet):
             queryset = XuatKhoModel.objects.filter(input_date__range=[start, end])
         else:
             queryset = super().get_queryset()
-        return queryset
+        return queryset.order_by("-input_date")

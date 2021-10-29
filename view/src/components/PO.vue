@@ -18,10 +18,14 @@
         <tr>
           <th>Từ Ngày</th>
           <th>Đến ngày</th>
+          <th></th>
+          <th class="px-5">Tổng Extension Price</th>
         </tr>
         <tr>
           <td><input id="date-filter-start" /></td>
           <td><input id="date-filter-end" /></td>
+          <td></td>
+          <td class="px-5 " id="tong_extension_price">{{tong_extension_price}} USD</td>
         </tr>
       </table>
       <br>
@@ -122,8 +126,9 @@ export default {
       export_file_name: "PO_" + moment().format("DD_MM_YYYY"),
       form_data: {},
       action: "Tạo",
+      tong_extension_price: 0,
       columns: [
-        { data: "po_no", width: 150, "searchable": false},
+        { data: "po_no", width: 150},
         { data: "pn_13" },
         { data: "pn_10" },
         { data: "bosch_no" },
@@ -189,7 +194,7 @@ export default {
           this.api().columns().every( function () {
               var that = this;
               let column_data_src = this.dataSrc()
-              let allow_partial_search = ["pn_13", "english_des", "import_des", "app_des"]
+              let allow_partial_search = ["pn_13", "english_des", "import_des", "app_des", "po_no"]
               $('input', this.footer()).on('keyup change clear', function () {
                 if (that.search() !== this.value) {
                   if (this.value === ''){
@@ -207,6 +212,10 @@ export default {
                 }
               });
           });
+      },
+      drawCallback: function () {
+        var api = this.api();
+        component.tong_extension_price = api.column( 13, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",

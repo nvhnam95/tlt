@@ -26,4 +26,4 @@ class POView(ModelViewSet):
             queryset = POModel.objects.filter(updated_on__range=[start, end])
         else:
             queryset = super().get_queryset()
-        return queryset
+        return queryset.order_by("-id")

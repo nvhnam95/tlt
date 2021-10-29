@@ -11,3 +11,5 @@ class CongNoPaymentView(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["khach_hang"]
 
+    def get_queryset(self):
+        return super().get_queryset().order_by("-date")

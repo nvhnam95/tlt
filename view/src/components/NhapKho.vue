@@ -237,6 +237,7 @@ export default {
         var api = this.api();
         component.tong_extension_price = api.column( 14, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
+      "aaSorting": [],
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
       },

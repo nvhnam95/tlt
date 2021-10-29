@@ -148,6 +148,7 @@ export default {
       columns: this.columns,
       scrollX: true,
       autoWidth: true,
+      "aaSorting": [],
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
       },

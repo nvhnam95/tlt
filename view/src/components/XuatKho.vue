@@ -50,7 +50,7 @@
     >
       <thead>
         <tr>
-          <th>Ngày Nhập</th>
+          <th>Ngày Xuất</th>
           <th>Pn 13</th>
           <th>Số Lượng</th>
           <th>Giá Gốc<br />(VND)</th>
@@ -66,7 +66,7 @@
       </thead>
         <tfoot>
             <tr>
-          <th>Ngày Nhập</th>
+          <th>Ngày Xuất</th>
           <th>Pn 13</th>
           <th>Số Lượng</th>
           <th>Giá Gốc<br />(VND)</th>
@@ -185,6 +185,7 @@ export default {
         var api = this.api();
         component.tong_tien_goc = api.columns( 4, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
+      "aaSorting": [],
       language: {
         lengthMenu: "Hiển thị _MENU_ dòng",
       },

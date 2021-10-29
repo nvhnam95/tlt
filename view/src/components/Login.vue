@@ -186,7 +186,5 @@ form {
   background-color: #008080;
   color: #fff;
 }
-.container-fluid{
-  padding-right: 200px;
-}
+
 </style>

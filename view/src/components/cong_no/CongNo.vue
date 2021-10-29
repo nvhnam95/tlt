@@ -30,7 +30,15 @@
               @click="form_data = {}"
               v-b-modal.modal-cong-no-khach-hang-form
               variant="primary"
-              >Thêm Khách Hàng Mới</b-button
+              >Thêm Mới</b-button
+            >
+          </td>
+          <td>
+            <b-button
+              @click="export_cong_no_excel()"
+              v-if="this.selected_khach_hang_id"
+              variant="primary"
+              >Export Excel</b-button
             >
           </td>
         </tr>
@@ -88,14 +96,13 @@
             </thead>
             <tbody>
               <tr class="optimize_height">
-              <td>{{tong_no.toLocaleString()}}</td>
-              <td>{{da_thanh_toan.toLocaleString()}}</td>
-              <td>{{con_lai.toLocaleString()}}</td>
+                <td>{{ tong_no.toLocaleString() }}</td>
+                <td>{{ da_thanh_toan.toLocaleString() }}</td>
+                <td>{{ con_lai.toLocaleString() }}</td>
               </tr>
             </tbody>
           </table>
         </td>
-
       </tbody>
     </table>
     <div v-if="this.selected_khach_hang_id">
@@ -105,7 +112,7 @@
           <div>
             <KhoanNoTable
               active
-              @update_tong_no=update_tong_no
+              @update_tong_no="update_tong_no"
               :khach_hang_id_from_parent="selected_khach_hang_id"
               :title="''"
               :column_names="khoan_no_column_names"
@@ -124,7 +131,7 @@
         <b-tab title="Thanh Toán">
           <div>
             <ThanhToanTable
-              @update_da_thanh_toan=update_da_thanh_toan
+              @update_da_thanh_toan="update_da_thanh_toan"
               :khach_hang_id_from_parent="selected_khach_hang_id"
               :title="''"
               :column_names="thanh_toan_column_names"
@@ -190,9 +197,9 @@ export default {
         { data: "english_name" },
         { data: "vietnamese_name" },
         { data: "quantity" },
-        { data: "price", render: $.fn.dataTable.render.number(",", ".", 2)},
+        { data: "price", render: $.fn.dataTable.render.number(",", ".", 2) },
         { data: "vat" },
-        { data: "total", render: $.fn.dataTable.render.number(",", ".", 2)},
+        { data: "total", render: $.fn.dataTable.render.number(",", ".", 2) },
         {
           data: null,
           width: 100,
@@ -211,7 +218,7 @@ export default {
             return moment(data).format("DD/MM/YYYY");
           },
         },
-        { data: "amount", render: $.fn.dataTable.render.number(",", ".", 2)},
+        { data: "amount", render: $.fn.dataTable.render.number(",", ".", 2) },
         { data: "note" },
         {
           data: null,
@@ -240,11 +247,11 @@ export default {
   },
   mounted() {
     this.get_danh_sach_khach_hang();
-    $("#table_summary").DataTable({          
-          searching: false,
-          paging: false,
-          info: false,
-          })
+    $("#table_summary").DataTable({
+      searching: false,
+      paging: false,
+      info: false,
+    });
   },
   methods: {
     async get_danh_sach_khach_hang() {
@@ -333,14 +340,32 @@ export default {
         this.refresh_table_data();
       });
     },
-    update_tong_no(value){
-      this.tong_no = value
-      this.con_lai = this.tong_no - this.da_thanh_toan
+    update_tong_no(value) {
+      this.tong_no = value;
+      this.con_lai = this.tong_no - this.da_thanh_toan;
     },
-    update_da_thanh_toan(value){
-      this.da_thanh_toan = value
-      this.con_lai = this.tong_no - this.da_thanh_toan
-    }
+    update_da_thanh_toan(value) {
+      this.da_thanh_toan = value;
+      this.con_lai = this.tong_no - this.da_thanh_toan;
+    },
+    export_cong_no_excel() {
+      let url = new URL(process.env.VUE_APP_API_ENDPOINT + "/api/v1/cong-no/export-excel")
+      url.searchParams.set("khach_hang_id", this.selected_khach_hang_id)
+
+      // Download file
+      axios({
+        url: url.href,
+        method: "get",
+        responseType: "blob",
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", this.form.name + ".xlsx");
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
   },
 };
 </script>
@@ -352,11 +377,13 @@ table.dataTable thead th {
 button {
   padding: 5px;
 }
-th, td {
-    white-space: nowrap;
+th,
+td {
+  white-space: nowrap;
 }
-table.dataTable tbody th, table.dataTable tbody td {
-    padding: 0px 10px; /* e.g. change 8x to 4px here */
+table.dataTable tbody th,
+table.dataTable tbody td {
+  padding: 0px 10px; /* e.g. change 8x to 4px here */
 }
 
 .optimize_height {
