@@ -1,0 +1,81 @@
+version: "3.9"
+services:
+  frontend:
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: view.dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencryptresolver"
+      - "traefik.http.middlewares.frontend.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.frontend.redirectscheme.permanent=true"
+      - "traefik.http.routers.frontend.rule=Host(`quanli.phutungmaydautlt.com`)"
+  backend:
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: be.dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=letsencryptresolver"
+      - "traefik.http.middlewares.backend.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.backend.redirectscheme.permanent=true"
+      - "traefik.http.routers.backend.rule=Host(`api.quanli.phutungmaydautlt.com`)"
+    volumes:
+      - "/app/db.sqlite3:/usr/src/app/db.sqlite3"
+
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+            #      - "--log.level=DEBUG"
+            #      - "--api.insecure=true"
+            #      - "--providers.docker=true"
+            #      - "--providers.docker.exposedbydefault=false"
+            #      - "--entrypoints.web.address=:80"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=nguyenhainam456@email.com"
+      - "--certificatesresolvers.letsencryptresolver.acme.storage=acme.json"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8000:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - app
+
+  # postgres:
+  #   networks:
+  #     - app
+  #   image: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_PASSWORD:
+  #     POSTGRES_USER: admin
+  #     POSTGRES_DB: app
+  #   volumes:
+  #     - "./backend/src/main/resources/db/migration:/docker-entrypoint-initdb.d/"
+  #
+  # adminer:
+  #   networks:
+  #     - app
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - "9000:8080"
+
+networks:
+  app:
