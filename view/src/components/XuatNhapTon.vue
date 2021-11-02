@@ -167,7 +167,7 @@ export default {
       },
       drawCallback: function () {
         var api = this.api();
-        component.tong_tien_back_order = api.column( 14, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
+        component.tong_tien_back_order = api.column( 13, {page:'all', search: 'applied'} ).data().sum().toLocaleString()
       },
     });
   }

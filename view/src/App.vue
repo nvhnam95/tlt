@@ -144,7 +144,7 @@ export default {
         },
       ],
       isOnMobile: false,
-      collapsed: false,
+      collapsed: true,
       permissions: [],
     };
   },

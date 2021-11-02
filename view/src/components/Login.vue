@@ -62,6 +62,7 @@ export default {
     $(".v-sidebar-menu").hide();
     if (localStorage.getItem("is_authenticated"))
       window.location.href = "/";
+    // this.$emit("toggle-collapse")
   },
   data() {
     return {
@@ -185,6 +186,11 @@ form {
 .btn:focus {
   background-color: #008080;
   color: #fff;
+}
+
+#demo {
+  padding-left: 10px;
+  transition: 0.3s ease;
 }
 
 </style>
