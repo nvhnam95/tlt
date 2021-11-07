@@ -35,14 +35,44 @@
           </td>
           <td>
             <b-button
-              @click="export_cong_no_excel()"
+              v-b-modal.export-excel-modal
               v-if="this.selected_khach_hang_id"
               variant="primary"
               >Export Excel</b-button
             >
+
           </td>
         </tr>
       </table>
+      <b-modal id="export-excel-modal" title="Export Excel Cho" hide-footer hide-header-close>
+        <table>
+        <tr>
+          <td>
+            <b-button
+              @click="export_cong_no_excel()"
+              variant="primary"
+              >User Này</b-button
+            >
+          </td>
+          <td>
+            <b-button
+            @click="export_cong_no_excel_all()"
+              variant="primary"
+              >Tất cả User</b-button
+            >
+          </td>
+          <td>
+            <b-button
+            @click="$bvModal.hide('export-excel-modal')"
+              variant="primary"
+              >Hủy</b-button
+            >
+          </td>
+        </tr>
+      </table>
+
+      </b-modal>
+
       <b-modal
         id="modal-cong-no-khach-hang-form"
         no-close-on-backdrop
@@ -365,6 +395,25 @@ export default {
         document.body.appendChild(link);
         link.click();
       });
+      this.$bvModal.hide("export-excel-modal")
+    },
+    export_cong_no_excel_all() {
+      let url = new URL(process.env.VUE_APP_API_ENDPOINT + "/api/v1/cong-no/export-excel")
+
+      // Download file
+      axios({
+        url: url.href,
+        method: "get",
+        responseType: "blob",
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "cong_no_all" + ".xlsx");
+        document.body.appendChild(link);
+        link.click();
+      });
+      this.$bvModal.hide("export-excel-modal")
     },
   },
 };
