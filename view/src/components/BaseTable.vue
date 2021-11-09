@@ -63,9 +63,9 @@
           <th v-for="item in column_names" v-bind:key="item">{{ item }}</th>
         </tr>
       </thead>
-      <tfoot v-if=!hide_table_footer>
-        <tr >
-          <th v-for="item in column_names" v-bind:key="item">{{ item }}</th>
+      <tfoot>
+        <tr v-if=!hide_table_footer >
+          <th  v-for="item in column_names" v-bind:key="item">{{ item }}</th>
         </tr>
       </tfoot>
     </table>
@@ -154,6 +154,7 @@ export default {
       autoWidth: true,
       initComplete: function () {
         // Apply the search
+        if (!component.hide_table_footer)
         this.api()
           .columns()
           .every(function () {
