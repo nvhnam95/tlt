@@ -11,8 +11,10 @@
         >Thêm Mới</b-button
       >
       &nbsp;
-      <b-button @click="export_excel" variant="primary">Export Excel</b-button>
+      <b-button @click="export_excel" variant="primary">Export Excel</b-button> &nbsp;
+      <input id="fileUpload"  type="file" v-on:change="upload_excel_file"  hidden>
 
+      <b-button @click="import_excel" variant="primary">Import Excel</b-button>
       <hr style="border-color: rgba(0, 0, 0, 0.1); margin: 20px" />
       <table>
         <tr>
@@ -117,6 +119,7 @@ import tool_mixin from "./tool_mixins.js";
 import moment from "moment";
 import "daterangepicker/daterangepicker";
 import "daterangepicker/daterangepicker.css";
+import XLSX from 'xlsx';
 
 export default {
   mixins: [tool_mixin],
@@ -244,7 +247,36 @@ export default {
     });
   },
   methods: {
+    import_excel(){
+      document.getElementById("fileUpload").click()
+    },
+    upload_excel_file(e){
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+          return;
+      let file = files[0]
+      let reader = new FileReader();
+      let f = ""
+      reader.onload = (e) => {
+          f = e.target.result;
+          // console.log(f)
+          this.send_file(f)
+      };
+      reader.readAsBinaryString(file);
 
+    },
+    send_file(file){
+      let base_url = process.env.VUE_APP_API_ENDPOINT;
+      let url = base_url + "/api/v1/purchasing-orders/import-excel"
+      const wb = XLSX.read(file, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      axios.post(url, {data: data})
+      this.fileUpload
+      this.refresh_table_data()
+    },
     delete_po(id) {
       let base_url = process.env.VUE_APP_API_ENDPOINT;
       let url = base_url + "/api/v1/purchasing-orders" + "/" + id;
