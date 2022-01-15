@@ -270,6 +270,18 @@
         ></b-form-input>
       </b-form-group>
 
+      <b-form-group
+        id="input-group-17"
+        label="Khách Hàng:"
+        label-for="remark"
+      >
+        <b-form-input
+          id="remark"
+          v-model="form.remark"
+          type="text"
+        ></b-form-input>
+      </b-form-group>
+
       <br />
       <div style="float: right">
         <b-button type="submit" variant="light">{{ action }} </b-button>

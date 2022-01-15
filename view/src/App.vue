@@ -149,7 +149,11 @@ export default {
     };
   },
   async mounted() {
-    let token = localStorage.getItem("token");
+    // let token = localStorage.getItem("token");
+    let token = document.cookie
+    if (token.includes("Token"))
+      token = token.split(";")[0].split("=")[1]
+
     if (token)
       axios.defaults.headers.common["Authorization"] = "Token " + token;
     await this.get_permissions();
@@ -174,8 +178,7 @@ export default {
           this.permissions = response.data.permissions;
         })
         .catch(function () {
-          localStorage.removeItem("is_authenticated");
-          localStorage.removeItem("token");
+          document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
           this.$router.push("Login");
         });
     },

@@ -74,6 +74,7 @@
           <th>Tổng Giá Gốc</th>
           <th>Tỷ Giá</th>
           <th>% Thuế VAT</th>
+          <th>Khách Hàng</th>
           <th></th>
         </tr>
       </thead>
@@ -102,6 +103,7 @@
           <th>Tổng Giá Gốc</th>
           <th>Tỷ Giá</th>
           <th>% Thuế VAT</th>
+          <th>Khách Hàng</th>
           <th></th>
         </tr>
       </tfoot>
@@ -173,6 +175,7 @@ export default {
         },
         { data: "ratio" },
         { data: "vat_percentage" },
+        { data: "remark" },
         {
           data: null,
           width: 100,

@@ -24,5 +24,6 @@ class NhapKhoModel(models.Model):
     gia_goc = models.FloatField(default=0, blank=True)
     tong_gia_goc = models.FloatField(default=0, blank=True)
     ratio = models.FloatField(default=0, blank=True)
+    remark = models.TextField(default="", blank=True)  # Display as Khach Hang on GUI
     vat_percentage = models.FloatField(default=0, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

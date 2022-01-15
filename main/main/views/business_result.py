@@ -17,6 +17,15 @@ class BusinessResultView(APIView):
         time.sleep(0.05)
         start = request.query_params.get("start")
         end = request.query_params.get("end")
+
+        # New req: dont filter cong_no_chua_thu at all
+        tong_tien_no_all = sum([x.total for x in CongNoModel.objects.all()])
+        tong_tien_da_thu_all = sum([x.amount for x in CongNoPaymentModel.objects.all()])
+        cong_no_chua_thu_all = tong_tien_no_all - tong_tien_da_thu_all
+
+        tong_gia_goc_all = sum([x.tong_gia_goc for x in NhapKhoModel.objects.all()])
+        tong_tien_goc_all = sum([x.tien_goc for x in XuatKhoModel.objects.all()])
+
         if start and end:
             doanh_thu_bosch = sum([x.total for x in BoschRevenueModel.objects.filter(date__range=[start, end])])
             doanh_thu_ngoai = sum([x.tien_ban for x in SideRevenueModel.objects.filter(date__range=[start, end])])
@@ -152,6 +161,11 @@ class BusinessResultView(APIView):
             },
             {
                 "no": "",
+                "content": "Công nợ chưa thu toàn thời gian",
+                "value": cong_no_chua_thu_all
+            },
+            {
+                "no": "",
                 "content": "Tổng giá trị đặt hàng (PO)",
                 "value": tong_extension_price
             },
@@ -164,6 +178,11 @@ class BusinessResultView(APIView):
                 "no": "",
                 "content": "Tổng Giá Trị Gốc Tồn Kho",
                 "value": tong_gia_goc - tong_tien_goc
+            },
+            {
+                "no": "",
+                "content": "Tổng Giá Trị Gốc Tồn Kho Toàn Thời Gian",
+                "value": tong_gia_goc_all - tong_tien_goc_all
             },
         ]
         return Response(data)

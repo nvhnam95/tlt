@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     log_out(){
-      localStorage.clear()
+      document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/";
     },
     async get_user_info() {

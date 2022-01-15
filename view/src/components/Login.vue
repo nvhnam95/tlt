@@ -60,9 +60,8 @@ import axios from "axios";
 export default {
   mounted() {
     $(".v-sidebar-menu").hide();
-    if (localStorage.getItem("is_authenticated"))
-      window.location.href = "/";
-    // this.$emit("toggle-collapse")
+    let token = document.cookie
+    if (token.includes("Token")) window.location.href = "/";
   },
   data() {
     return {
@@ -91,10 +90,11 @@ export default {
         data: component.form,
       })
         .then((response) => {
-          localStorage.setItem("token", response.data.token)
-          localStorage.setItem("is_authenticated", true)
-          
-          location.reload()
+          // localStorage.setItem("token", response.data.token)
+          // localStorage.setItem("is_authenticated", true)
+          document.cookie = "Token=" + response.data.token
+          // location.reload()
+          window.location.href = "/"
         })
         .catch(function () {
           component.is_failed = true

@@ -135,7 +135,11 @@ const router = new VueRouter({
 // let auth_url = process.env.VUE_APP_API_ENDPOINT + "/api/v1/current-user"
 
 router.beforeEach((to, from, next) => {
-  let is_authenticated = localStorage.getItem("is_authenticated")
+  let token = document.cookie
+  let is_authenticated = false
+  if (token.includes("Token"))
+    is_authenticated = true
+
   // let token = localStorage.getItem("token")
   // axios.get(auth_url, headers= {'Authentication': "Bearer " + token}).then((response) => {
   //   console.log(response.data)

@@ -116,8 +116,7 @@ export default {
           this.form.permissions = response.data.permissions;
         })
         .catch(function () {
-          localStorage.removeItem("is_authenticated");
-          localStorage.removeItem("token");
+          document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
           this.$router.push("Login");
         });
 
@@ -132,8 +131,7 @@ export default {
           this.permission_list = response.data;
         })
         .catch(function () {
-          localStorage.removeItem("is_authenticated");
-          localStorage.removeItem("token");
+          document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
           this.$router.push("Login");
         });
     },
