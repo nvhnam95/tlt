@@ -42,8 +42,8 @@ class XuatNhapTonView(ModelViewSet):
                 grouped_dict[pn_10]["total_po"] += item["total_po"]
                 grouped_dict[pn_10]["bor"] += item["bor"]
 
-                grouped_dict[pn_10]["gia_si"] += item["gia_si"]
-                grouped_dict[pn_10]["gia_le"] += item["gia_le"]
+                grouped_dict[pn_10]["gia_si"] = max(item["gia_si"], grouped_dict[pn_10]["gia_si"])
+                grouped_dict[pn_10]["gia_le"] = max(item["gia_le"], grouped_dict[pn_10]["gia_le"])
             else:
                 grouped_dict[pn_10] = item
             bor_price = total_po_price - total_nhap_kho_price
