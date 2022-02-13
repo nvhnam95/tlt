@@ -104,7 +104,8 @@ class CongNoView(ModelViewSet):
                 to_merge_cell_list.append({"from": xl_rowcol_to_cell(merge_from, 0),
                                            "to": xl_rowcol_to_cell(merge_to, 0),
                                            "val": f'Tháng {month_year}'})
-
+            if not cong_no:
+                current_row += 1
             end_sum_cong_no = xl_rowcol_to_cell(current_row-1, 10)
             worksheet.write(current_row, 9, "Tổng số tiền nợ", red_bold_format)
             worksheet.write_formula(current_row, 10, f"=SUM({start_sum_cong_no}:{end_sum_cong_no})", red_bold_currency_format)
@@ -134,15 +135,16 @@ class CongNoView(ModelViewSet):
 
             worksheet.set_column(0, 0, 14)
             worksheet.set_column(1, 1, 13)
-            worksheet.set_column(2, 2, max([len(c.bosch_no) for c in cong_no]) + 1)
-            worksheet.set_column(3, 3, max([len(c.zexel_no) for c in cong_no]) + 1)
-            worksheet.set_column(4, 4, max([len(c.ma_tem) for c in cong_no]) + 2)
-            worksheet.set_column(5, 5, max([len(c.english_name) for c in cong_no]) + 1)
-            worksheet.set_column(6, 6, max([len(c.vietnamese_name) for c in cong_no]) + 1)
-            worksheet.set_column(7, 7, 9)
-            worksheet.set_column(8, 8, max([len(str(c.vat)) for c in cong_no]) + 3)
-            worksheet.set_column(9, 9, max([max([len(str(c.price)) for c in cong_no]) + 5, 16]))
-            worksheet.set_column(10, 10, max([len(str(c.total)) for c in cong_no]) + 3)
+            if cong_no:
+                worksheet.set_column(2, 2, max([len(c.bosch_no) for c in cong_no] + [12]) + 1)
+                worksheet.set_column(3, 3, max([len(c.zexel_no) for c in cong_no]) + 1)
+                worksheet.set_column(4, 4, max([len(c.ma_tem) for c in cong_no]) + 2)
+                worksheet.set_column(5, 5, max([len(c.english_name) for c in cong_no]) + 1)
+                worksheet.set_column(6, 6, max([len(c.vietnamese_name) for c in cong_no]) + 1)
+                worksheet.set_column(7, 7, 9)
+                worksheet.set_column(8, 8, max([len(str(c.vat)) for c in cong_no]) + 3)
+                worksheet.set_column(9, 9, max([max([len(str(c.price)) for c in cong_no]) + 5, 16]))
+                worksheet.set_column(10, 10, max([len(str(c.total)) for c in cong_no]) + 3)
 
         workbook.close()
         output.seek(0)

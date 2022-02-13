@@ -39,6 +39,11 @@ class BusinessResultView(APIView):
             tong_tien_goc = sum([x.tien_goc for x in XuatKhoModel.objects.filter(input_date__range=[start, end])])
 
             # Cong no chua thu
+            a = [x for x in CongNoModel.objects.filter(ngay_xuat_hang__range=[start, end])]
+            b = [x for x in CongNoPaymentModel.objects.filter(date__range=[start, end])]
+            c = CongNoModel.objects.filter(ngay_xuat_hang__range=[start, end])
+            d = c.query
+            e = CongNoPaymentModel.objects.filter(date__range=[start, end]).query
             tong_tien_no = sum([x.total for x in CongNoModel.objects.filter(ngay_xuat_hang__range=[start, end])])
             tong_tien_da_thu = sum([x.amount for x in CongNoPaymentModel.objects.filter(date__range=[start, end])])
 
