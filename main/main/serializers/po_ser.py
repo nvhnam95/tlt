@@ -14,3 +14,8 @@ class POSerializer(serializers.ModelSerializer):
         po_obj = super().create(validated_data)
         refresh_xnt(po_obj.pn_13)
         return po_obj
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        refresh_xnt(instance.pn_13)
+        return instance

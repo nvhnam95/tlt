@@ -13,3 +13,8 @@ class XuatKhoSerializer(serializers.ModelSerializer):
         xuat_kho_obj = super().create(validated_data)
         refresh_xnt(xuat_kho_obj.pn_13)
         return xuat_kho_obj
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        refresh_xnt(instance.pn_13)
+        return instance
