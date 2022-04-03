@@ -7,7 +7,7 @@ from main.models.xuat_nhap_ton_model import XuatNhapTonModel
 def refresh_xnt(pn_13):
     xnt, is_xnt_created = XuatNhapTonModel.objects.get_or_create(pn_13=pn_13)
     nhap_kho_obj = NhapKhoModel.objects.filter(pn_13=pn_13).first()
-    if not nhap_kho_obj and not is_xnt_created:
+    if not nhap_kho_obj and is_xnt_created:
         return
 
     so_luong_nhap = 0
