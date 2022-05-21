@@ -24,7 +24,7 @@ def refresh_xnt(pn_13):
         xnt.app_des = nhap_kho_obj.app_des
         xnt.import_des = nhap_kho_obj.import_des
         xnt.dap_price = nhap_kho_obj.dap_price
-        xnt.gia_si = nhap_kho_obj.gia_si
+        xnt.gia_si = max([n.gia_si for n in NhapKhoModel.objects.filter(pn_13=pn_13)])  # Gia si cua xnt = max cua gia si trong nhap kho
         xnt.gia_le = nhap_kho_obj.gia_le
     else:
         dap_price = xnt.dap_price
