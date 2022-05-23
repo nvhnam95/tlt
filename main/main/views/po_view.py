@@ -38,27 +38,29 @@ class POView(ModelViewSet):
             return HttpResponse("Cannot import because not enough 20 columns")
         po_data = data[1:]
         for po in po_data:
+            if len(po) < 1:
+                continue
             validated_data = {
-                "po_no":            po[0],
-                "pn_13":            po[1],
-                "pn_10":            po[2],
-                "bosch_no":         po[3],
-                "z_exel_no":         po[4],
-                "stamping":         po[5],
-                "country":          po[6],
-                "english_des":      po[7],
-                "import_des":       po[8],
-                "app_des":          po[9],
-                "tax":              po[10],
-                "quantity":         po[11],
-                "dap_price":        po[12],
-                "extension_price":  po[13],
-                "gia_von":          po[14],
-                "gia_si":           po[15],
-                "gia_le":           po[16],
-                "lead_time":        po[17] if len(po) > 17 else "",
-                "customer":         po[18] if len(po) > 18 else "",
-                "remarks":          po[19] if len(po) > 19 else "",
+                "po_no":            po[0] or "",
+                "pn_13":            po[1] or "",
+                "pn_10":            po[2] or "",
+                "bosch_no":         po[3] or "",
+                "z_exel_no":         po[4] or "",
+                "stamping":         po[5] or "",
+                "country":          po[6] or "",
+                "english_des":      po[7] or "",
+                "import_des":       po[8] or "",
+                "app_des":          po[9] or "",
+                "tax":              po[10] or "",
+                "quantity":         po[11] or 0,
+                "dap_price":        po[12] or 0,
+                "extension_price":  po[13] or 0,
+                "gia_von":          po[14] or 0,
+                "gia_si":           po[15] or 0,
+                "gia_le":           po[16] or 0,
+                "lead_time":        po[17] if len(po) > 17 and po[17] else "",
+                "customer":         po[18] if len(po) > 18 and po[18] else "",
+                "remarks":          po[19] if len(po) > 19 and po[19] else "",
             }
             POSerializer().create(validated_data)
         return HttpResponse("Done")

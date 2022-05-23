@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from main.models.page_access_model import PageAccessModel
+# from main.models.page_access_model import PageAccessModel
 from main.utils.data.data_generator import generate_test_data
 from main.views.auth_views import user_detail
 from main.views.bosch_revenue_view import BoschRevenueView
