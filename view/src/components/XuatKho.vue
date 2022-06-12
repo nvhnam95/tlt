@@ -61,6 +61,7 @@
           <th>Import Name<br />(Tên Nhập Khẩu)</th>
           <th>App Name<br />(Tên Ứng Dụng)</th>
           <th>Khách Hàng</th>
+          <th>Stamping</th>
           <th></th>
         </tr>
       </thead>
@@ -77,6 +78,7 @@
           <th>Import Name<br />(Tên Nhập Khẩu)</th>
           <th>App Name<br />(Tên Ứng Dụng)</th>
           <th>Khách Hàng</th>
+          <th>Stamping</th>
           <th></th>
             </tr>
         </tfoot>
@@ -123,6 +125,7 @@ export default {
         { data: "import_des" },
         { data: "app_des" },
         { data: "customer" },
+        { data: "stamping" },
         {
           data: null,
           width: 100,

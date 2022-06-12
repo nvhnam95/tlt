@@ -13,4 +13,5 @@ class XuatKhoModel(models.Model):
     customer = models.TextField(default='', blank=True)
     gia_si = models.FloatField(default=0, blank=True)
     gia_le = models.FloatField(default=0, blank=True)
+    stamping = models.TextField(default="", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

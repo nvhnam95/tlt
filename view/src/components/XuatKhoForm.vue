@@ -120,6 +120,18 @@
         ></b-form-input>
       </b-form-group>
 
+      <b-form-group
+        id="input-group-13"
+        label="Stamping:"
+        label-for="stamping"
+      >
+        <b-form-input
+          id="stamping"
+          v-model="form.stamping"
+          type="text"
+        ></b-form-input>
+      </b-form-group>
+
       <br />
       <div style="float: right">
         <b-button type="submit" variant="light">{{action}} </b-button>
